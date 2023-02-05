@@ -1,16 +1,14 @@
-### Hi there 👋
+### Howdy 😃
 
-<!--
-**thydo/thydo** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
-
-Here are some ideas to get you started:
-
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+  ✨ I'm Thy
+  
+  🔭 I’m working on my Graduate degree in Computer Science at School of Computing and Augmented Intelligence at Arizona State University 🌞😈
+  
+  🌱 I’m learning about Robotics Vision, Software Quality Assurance, and Algorithms
+  
+  💼 Open to work
+  
+  📫 [LinkedIn](www.linkedin.com/in/thy-do)
+  
+  🎤 Pronounce my name: `thee`
+  
