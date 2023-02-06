@@ -2,7 +2,7 @@
 
   ✨ I'm Thy
   
-  🔭 I’m working on my Graduate degree in **Computer Science** at **School of Computing and Augmented Intelligence** at **Arizona State University** 🌞😈
+  🔭 I’m working on my Graduate degree in **Computer Science** at [**School of Computing and Augmented Intelligence**](https://scai.engineering.asu.edu/) at **Arizona State University** 🌞😈
   
   🌱 I’m learning about Robotics Vision, Software Quality Assurance, and Algorithms
   
