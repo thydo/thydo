@@ -3,12 +3,20 @@
   "type": "module",
   "version": "1.0.0",
   "scripts": {
-    "dev": "astro dev",
+    "sync": "python3 -m resume.scripts.sync",
+    "watch:sync": "chokidar \"resume/**/*.md\" -c \"python3 -m resume.scripts.sync -q\"",
+    "predev": "npm run sync",
+    "dev": "concurrently \"astro dev\" \"npm run watch:sync\" --names astro,sync -c blue,yellow",
+    "prebuild": "npm run sync",
     "build": "astro build",
     "preview": "astro preview"
   },
   "dependencies": {
     "astro": "^5.0.0",
     "gray-matter": "^4.0.3"
+  },
+  "devDependencies": {
+    "chokidar-cli": "^3.0.0",
+    "concurrently": "^9.2.1"
   }
 }

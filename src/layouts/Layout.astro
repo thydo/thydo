@@ -1,13 +1,37 @@
 ---
-import { loadConfig, themeToCSS } from "../lib/config";
+import { theme } from "../data/resume-schema";
 
 interface Props {
   title: string;
 }
 
 const { title } = Astro.props;
-const config = loadConfig();
-const cssVars = themeToCSS(config.theme);
+
+// Generate CSS variables from theme config
+const cssVars = `
+  :root {
+    --color-primary: ${theme.colors.primary};
+    --color-text: ${theme.colors.text};
+    --color-text-secondary: ${theme.colors.textSecondary};
+    --color-bg: ${theme.colors.background};
+    --color-border: ${theme.colors.border};
+
+    --font-family: ${theme.fonts.family};
+    --font-size-base: ${theme.fonts.sizeBase};
+    --font-size-h1: ${theme.fonts.sizeH1};
+    --font-size-h2: ${theme.fonts.sizeH2};
+    --font-size-h3: ${theme.fonts.sizeH3};
+    --font-size-small: ${theme.fonts.sizeSmall};
+
+    --max-width: ${theme.spacing.containerMaxWidth};
+    --container-padding: ${theme.spacing.containerPadding};
+    --section-margin: ${theme.spacing.sectionMargin};
+    --item-margin: ${theme.spacing.itemMargin};
+
+    --border-header: ${theme.borders.header};
+    --border-section: ${theme.borders.section};
+  }
+`;
 ---
 
 <!doctype html>

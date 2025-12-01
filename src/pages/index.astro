@@ -1,9 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import Layout from "../layouts/Layout.astro";
-import { loadConfig } from "../lib/config";
-
-const config = loadConfig();
+import { sectionSchemas, getFieldType, getFieldPrefix } from "../data/resume-schema";
 
 // Get all resume content
 const allEntries = await getCollection("resume");
@@ -72,11 +70,15 @@ function renderContent(content: string): string {
 
 <Layout title="Thy Do - Software Engineer">
   <main>
-    {sortedSections.map(({ header, items }) => {
-      const sectionType = header?.data?.type;
-      const title = header?.data?.title;
-      const fields = header?.data?.fields || {};
-      const renderAsCategories = header?.data?.render_as_categories;
+    {sortedSections.map(({ folder, header, items }) => {
+      // Get schema from generated file (single source of truth)
+      const schemaIndex = parseInt(folder.split("-")[0], 10);
+      const schema = sectionSchemas[schemaIndex] || {};
+
+      const sectionType = schema.type || header?.data?.type;
+      const title = schema.title || header?.data?.title;
+      const fields = schema.fields || {};
+      const renderAsCategories = schema.renderAsCategories;
 
       return (
         <section class={`section section--${sectionType}`}>
@@ -119,12 +121,6 @@ function renderContent(content: string): string {
             }
 
             {/* Education, Experience, Projects */}
-            {/* Helper to get field type (handles both string and object configs) */}
-            const getFieldType = (fieldConfig: any) =>
-              typeof fieldConfig === "string" ? fieldConfig : fieldConfig?.type;
-            const getFieldPrefix = (fieldConfig: any) =>
-              typeof fieldConfig === "object" ? fieldConfig?.prefix || "" : "";
-
             {/* Group fields by type */}
             const headerFields = Object.entries(fields).filter(([_, fc]) => getFieldType(fc) === "header");
             const subheaderFields = Object.entries(fields).filter(([_, fc]) => getFieldType(fc) === "subheader");
