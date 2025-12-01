@@ -107,30 +107,14 @@ function renderContent(content: string): string {
 ---
 
 <Layout title="Thy Do - Software Engineer">
-  {/* Header - Personal Info */}
-  {headerSection && (
-    <header class="personal">
-      {headerSection.items.map((item) => {
-        const data = item.data;
-        return (
-          <>
-            {data.name && <h1>{data.name}</h1>}
-            {data.title && <p class="job-title">{data.title}</p>}
-            <p class="contact">
-              {data.email && <><a href={`mailto:${data.email}`}>{data.email}</a><span class="sep">|</span></>}
-              {data.GitHub && <><a href={`https://${data.GitHub}`} target="_blank">{data.GitHub}</a><span class="sep">|</span></>}
-              {data.LinkedIn && <a href={`https://${data.LinkedIn}`} target="_blank">{data.LinkedIn}</a>}
-            </p>
-          </>
-        );
-      })}
-    </header>
-  )}
-
   {/* Two-column layout */}
   <div class="layout">
-    {/* Sidebar - Education & Skills */}
+    {/* Sidebar - Photo, Education & Skills */}
     <aside class="sidebar">
+      {/* Profile Photo - add your image to public/photo.jpg */}
+      <div class="profile-photo">
+        <img src="/thydo/photo.jpg" alt="Profile photo" />
+      </div>
       {sidebarSections.map(({ folder, header, items }) => {
         const schemaIndex = parseInt(folder.split("-")[0], 10);
         const schema = sectionSchemas[schemaIndex] || {};
@@ -194,8 +178,28 @@ function renderContent(content: string): string {
       })}
     </aside>
 
-    {/* Main Content - Summary, Experience, Projects */}
+    {/* Main Content - Header, Summary, Experience, Projects */}
     <main class="main-content">
+      {/* Header - Personal Info */}
+      {headerSection && (
+        <header class="personal">
+          {headerSection.items.map((item) => {
+            const data = item.data;
+            return (
+              <>
+                {data.name && <h1>{data.name}</h1>}
+                {data.title && <p class="job-title">{data.title}</p>}
+                <p class="contact">
+                  {data.email && <><a href={`mailto:${data.email}`}>{data.email}</a><span class="sep">|</span></>}
+                  {data.GitHub && <><a href={`https://${data.GitHub}`} target="_blank">{data.GitHub}</a><span class="sep">|</span></>}
+                  {data.LinkedIn && <a href={`https://${data.LinkedIn}`} target="_blank">{data.LinkedIn}</a>}
+                </p>
+              </>
+            );
+          })}
+        </header>
+      )}
+
       {mainSections.map(({ folder, header, items }) => {
         const schemaIndex = parseInt(folder.split("-")[0], 10);
         const schema = sectionSchemas[schemaIndex] || {};
