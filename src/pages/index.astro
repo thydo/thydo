@@ -111,10 +111,17 @@ function renderContent(content: string): string {
   <div class="layout">
     {/* Sidebar - Photo, Education & Skills */}
     <aside class="sidebar">
-      {/* Profile Photo - add your image to public/photo.jpg */}
-      <div class="profile-photo">
-        <img src="/thydo/photo.jpg" alt="Profile photo" />
-      </div>
+      {/* Profile Photo - add your image to public/photo.* (jpg, JPG, png, etc.) */}
+      {(() => {
+        // Find photo with any common extension (case-insensitive matching at build)
+        const photoFiles = Object.keys(import.meta.glob('/public/photo.{jpg,JPG,jpeg,JPEG,png,PNG}', { eager: true }));
+        const photoPath = photoFiles[0]?.replace('/public', '/thydo') || '/thydo/photo.jpg';
+        return (
+          <div class="profile-photo">
+            <img src={photoPath} alt="Profile photo" />
+          </div>
+        );
+      })()}
       {sidebarSections.map(({ folder, header, items }) => {
         const schemaIndex = parseInt(folder.split("-")[0], 10);
         const schema = sectionSchemas[schemaIndex] || {};
