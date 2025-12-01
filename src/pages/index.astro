@@ -44,6 +44,9 @@ function renderContent(content: string): string {
   // Convert **bold** to <strong>
   let html = content.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
 
+  // Helper to clean list item text
+  const cleanItem = (item: string) => item.replace(/^-\s*/, "").trim();
+
   // Split into sections by bold headers
   const sections = html.split(/(?=<strong>[^<]+:<\/strong>)/);
 
@@ -52,14 +55,14 @@ function renderContent(content: string): string {
     if (headerMatch) {
       const header = headerMatch[1];
       const rest = section.replace(/^<strong>[^<]+:<\/strong>\s*/, "");
-      const items = rest.split(/\n- /).filter(Boolean);
-      const listHtml = items.map(item => `<li>${item.trim()}</li>`).join("\n");
+      const items = rest.split(/\n-\s*/).filter(Boolean);
+      const listHtml = items.map(item => `<li>${cleanItem(item)}</li>`).join("\n");
       return `<div class="subsection"><h4>${header}</h4><ul>${listHtml}</ul></div>`;
     }
     // Plain list items
-    const items = section.split(/\n- /).filter(Boolean);
+    const items = section.split(/\n-\s*/).filter(Boolean);
     if (items.length > 0) {
-      const listHtml = items.map(item => `<li>${item.replace(/^- /, "").trim()}</li>`).join("\n");
+      const listHtml = items.map(item => `<li>${cleanItem(item)}</li>`).join("\n");
       return `<ul>${listHtml}</ul>`;
     }
     return section;
