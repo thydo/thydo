@@ -1,0 +1,198 @@
+---
+import { loadConfig, themeToCSS } from "../lib/config";
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+const config = loadConfig();
+const cssVars = themeToCSS(config.theme);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Thy Do - Software Engineer specializing in cloud infrastructure, automation, and full-stack development" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style set:html={cssVars}></style>
+  </head>
+  <body>
+    <div class="container">
+      <slot />
+    </div>
+  </body>
+</html>
+
+<style is:global>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+    color: var(--color-text);
+    background: var(--color-bg);
+  }
+
+  .container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: var(--container-padding);
+  }
+
+  /* Personal/Header Section */
+  .personal {
+    text-align: center;
+    margin-bottom: var(--section-margin);
+    padding-bottom: 1.5rem;
+    border-bottom: var(--border-header) var(--color-primary);
+  }
+
+  .personal h1 {
+    font-size: var(--font-size-h1);
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 0.25rem;
+  }
+
+  .personal .job-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-secondary);
+    margin-bottom: 0.75rem;
+  }
+
+  .personal .contact {
+    font-size: var(--font-size-small);
+  }
+
+  .personal .contact a {
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  .personal .contact a:hover {
+    text-decoration: underline;
+  }
+
+  .personal .sep {
+    margin: 0 0.5rem;
+    color: var(--color-text-secondary);
+  }
+
+  /* Section Headers */
+  .section h2 {
+    font-size: var(--font-size-h2);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-primary);
+    border-bottom: var(--border-section) var(--color-border);
+    padding-bottom: 0.5rem;
+    margin: var(--section-margin) 0 1rem;
+  }
+
+  /* Summary */
+  .summary {
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+  }
+
+  /* Skills */
+  .skill-category {
+    margin-bottom: 0.75rem;
+  }
+
+  .skill-category h4 {
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: inline;
+  }
+
+  .skill-category h4::after {
+    content: ": ";
+  }
+
+  .skill-list {
+    display: inline;
+    color: var(--color-text-secondary);
+  }
+
+  /* Items (Education, Experience, Projects) */
+  .item {
+    margin-bottom: var(--item-margin);
+  }
+
+  .item-header {
+    margin-bottom: 0.5rem;
+  }
+
+  .item-header h3 {
+    font-size: var(--font-size-h3);
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .item-header .subheader {
+    font-weight: 500;
+    color: var(--color-text-secondary);
+  }
+
+  .item-header .duration {
+    font-size: var(--font-size-small);
+    color: var(--color-text-secondary);
+  }
+
+  /* Content lists */
+  .content ul {
+    margin-top: 0.5rem;
+    padding-left: 1.25rem;
+    list-style: disc;
+  }
+
+  .content li {
+    margin-bottom: 0.35rem;
+    color: var(--color-text-secondary);
+  }
+
+  .content strong {
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  /* Subsections in experience */
+  .subsection {
+    margin: 1rem 0;
+  }
+
+  .subsection h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 0.5rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .container {
+      padding: 2rem 1rem;
+    }
+
+    .personal h1 {
+      font-size: 2rem;
+    }
+  }
+</style>

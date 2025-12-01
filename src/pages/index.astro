@@ -1,0 +1,140 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../layouts/Layout.astro";
+import { loadConfig } from "../lib/config";
+
+const config = loadConfig();
+
+// Get all resume content
+const allEntries = await getCollection("resume");
+
+// Group entries by section folder (00-personal, 01-summary, etc.)
+const sections = new Map<string, { header: any; items: any[] }>();
+
+for (const entry of allEntries) {
+  const [sectionFolder] = entry.id.split("/");
+
+  if (!sections.has(sectionFolder)) {
+    sections.set(sectionFolder, { header: null, items: [] });
+  }
+
+  const section = sections.get(sectionFolder)!;
+  const fileName = entry.id.split("/").pop() || "";
+
+  if (fileName.startsWith("00-")) {
+    section.header = entry;
+  } else {
+    section.items.push(entry);
+  }
+}
+
+// Sort sections and items
+const sortedSections = [...sections.entries()]
+  .sort(([a], [b]) => a.localeCompare(b))
+  .map(([folder, { header, items }]) => ({
+    folder,
+    header,
+    items: items.sort((a, b) => a.id.localeCompare(b.id)),
+  }));
+
+// Helper to render markdown content to HTML
+function renderContent(content: string): string {
+  if (!content) return "";
+
+  // Convert **bold** to <strong>
+  let html = content.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+
+  // Split into sections by bold headers
+  const sections = html.split(/(?=<strong>[^<]+:<\/strong>)/);
+
+  return sections.map(section => {
+    const headerMatch = section.match(/^<strong>([^<]+):<\/strong>/);
+    if (headerMatch) {
+      const header = headerMatch[1];
+      const rest = section.replace(/^<strong>[^<]+:<\/strong>\s*/, "");
+      const items = rest.split(/\n- /).filter(Boolean);
+      const listHtml = items.map(item => `<li>${item.trim()}</li>`).join("\n");
+      return `<div class="subsection"><h4>${header}</h4><ul>${listHtml}</ul></div>`;
+    }
+    // Plain list items
+    const items = section.split(/\n- /).filter(Boolean);
+    if (items.length > 0) {
+      const listHtml = items.map(item => `<li>${item.replace(/^- /, "").trim()}</li>`).join("\n");
+      return `<ul>${listHtml}</ul>`;
+    }
+    return section;
+  }).join("\n");
+}
+---
+
+<Layout title="Thy Do - Software Engineer">
+  <main>
+    {sortedSections.map(({ header, items }) => {
+      const sectionType = header?.data?.type;
+      const title = header?.data?.title;
+      const fields = header?.data?.fields || {};
+      const renderAsCategories = header?.data?.render_as_categories;
+
+      return (
+        <section class={`section section--${sectionType}`}>
+          {title && <h2>{title}</h2>}
+
+          {items.map((item) => {
+            const data = item.data;
+            const content = item.body;
+
+            {/* Personal section */}
+            if (sectionType === "personal") {
+              return (
+                <header class="personal">
+                  {data.name && <h1>{data.name}</h1>}
+                  {data.title && <p class="job-title">{data.title}</p>}
+                  <p class="contact">
+                    {data.email && <><a href={`mailto:${data.email}`}>{data.email}</a><span class="sep">|</span></>}
+                    {data.GitHub && <><a href={`https://${data.GitHub}`} target="_blank">{data.GitHub}</a><span class="sep">|</span></>}
+                    {data.LinkedIn && <a href={`https://${data.LinkedIn}`} target="_blank">{data.LinkedIn}</a>}
+                  </p>
+                </header>
+              );
+            }
+
+            {/* Summary section */}
+            if (sectionType === "plaintext") {
+              return <p class="summary">{content}</p>;
+            }
+
+            {/* Skills with categories */}
+            if (renderAsCategories) {
+              const categoryField = Object.keys(fields)[0];
+              const skills = content?.replace(/^- /gm, "").split("\n").filter(Boolean).join(", ");
+              return (
+                <div class="skill-category">
+                  {data[categoryField] && <h4>{data[categoryField]}</h4>}
+                  <span class="skill-list">{skills}</span>
+                </div>
+              );
+            }
+
+            {/* Education, Experience, Projects */}
+            return (
+              <article class="item">
+                <div class="item-header">
+                  {Object.entries(fields).map(([fieldName, fieldType]) => {
+                    const value = data[fieldName];
+                    if (!value) return null;
+
+                    if (fieldType === "header") return <h3>{value}</h3>;
+                    if (fieldType === "subheader") return <p class="subheader">{value}</p>;
+                    if (fieldType === "inline") return <span class="duration">{value}</span>;
+                    return null;
+                  })}
+                </div>
+                {content && <div class="content" set:html={renderContent(content)} />}
+              </article>
+            );
+          })}
+        </section>
+      );
+    })}
+  </main>
+</Layout>
