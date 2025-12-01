@@ -10,6 +10,7 @@ export interface FieldConfig {
 export interface SectionSchema {
   type: string;
   title: string | null;
+  sidebar: boolean;
   renderAsCategories: boolean;
   fields: Record<string, FieldConfig>;
 }
@@ -18,6 +19,7 @@ export const sectionSchemas: SectionSchema[] = [
   {
     type: "personal",
     title: null,
+    sidebar: false,
     renderAsCategories: false,
     fields: {
     name: { type: "header" },
@@ -30,6 +32,7 @@ export const sectionSchemas: SectionSchema[] = [
   {
     type: "plaintext",
     title: "SUMMARY",
+    sidebar: false,
     renderAsCategories: false,
     fields: {
 
@@ -38,6 +41,7 @@ export const sectionSchemas: SectionSchema[] = [
   {
     type: "education",
     title: "EDUCATION",
+    sidebar: true,
     renderAsCategories: false,
     fields: {
     degree: { type: "header" },
@@ -49,6 +53,7 @@ export const sectionSchemas: SectionSchema[] = [
   {
     type: "skills",
     title: "TECHNICAL SKILLS",
+    sidebar: true,
     renderAsCategories: true,
     fields: {
     category: { type: "subheader" }
@@ -57,6 +62,7 @@ export const sectionSchemas: SectionSchema[] = [
   {
     type: "experience",
     title: "PROFESSIONAL EXPERIENCE",
+    sidebar: false,
     renderAsCategories: false,
     fields: {
     position: { type: "header" },
@@ -67,6 +73,7 @@ export const sectionSchemas: SectionSchema[] = [
   {
     type: "projects",
     title: "PROJECTS",
+    sidebar: false,
     renderAsCategories: false,
     fields: {
     title: { type: "header" },

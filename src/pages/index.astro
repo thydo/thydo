@@ -35,6 +35,44 @@ const sortedSections = [...sections.entries()]
     items: items.sort((a, b) => a.id.localeCompare(b.id)),
   }));
 
+/**
+ * Section Routing - Controls where each section appears in the layout
+ *
+ * To ADD a new section:
+ *   1. Create folder in resume/sections/ (e.g., 06-certifications/)
+ *   2. Add 00-certifications.md header with type, title, sidebar, fields
+ *   3. Add item files (01-cert1.md, 02-cert2.md, etc.)
+ *   4. Run `npm run sync` to regenerate schema
+ *
+ * To MOVE section to sidebar:
+ *   - Add `sidebar: true` to the section's 00-*.md header file
+ *
+ * To MOVE section to main content:
+ *   - Remove `sidebar: true` (or set to false) in the section's 00-*.md header
+ *
+ * To REMOVE a section:
+ *   - Delete the folder from resume/sections/
+ *   - Run `npm run sync`
+ *
+ * Section routing logic:
+ *   - type: "personal" → Header (full width, top of page)
+ *   - sidebar: true → Left sidebar column
+ *   - Everything else → Main content column
+ */
+const headerSection = sortedSections.find(s => {
+  const idx = parseInt(s.folder.split("-")[0], 10);
+  return sectionSchemas[idx]?.type === "personal";
+});
+const sidebarSections = sortedSections.filter(s => {
+  const idx = parseInt(s.folder.split("-")[0], 10);
+  return sectionSchemas[idx]?.sidebar === true;
+});
+const mainSections = sortedSections.filter(s => {
+  const idx = parseInt(s.folder.split("-")[0], 10);
+  const schema = sectionSchemas[idx];
+  return schema?.type !== "personal" && !schema?.sidebar;
+});
+
 // Helper to render markdown content to HTML
 function renderContent(content: string): string {
   if (!content) return "";
@@ -69,99 +107,155 @@ function renderContent(content: string): string {
 ---
 
 <Layout title="Thy Do - Software Engineer">
-  <main>
-    {sortedSections.map(({ folder, header, items }) => {
-      // Get schema from generated file (single source of truth)
-      const schemaIndex = parseInt(folder.split("-")[0], 10);
-      const schema = sectionSchemas[schemaIndex] || {};
+  {/* Header - Personal Info */}
+  {headerSection && (
+    <header class="personal">
+      {headerSection.items.map((item) => {
+        const data = item.data;
+        return (
+          <>
+            {data.name && <h1>{data.name}</h1>}
+            {data.title && <p class="job-title">{data.title}</p>}
+            <p class="contact">
+              {data.email && <><a href={`mailto:${data.email}`}>{data.email}</a><span class="sep">|</span></>}
+              {data.GitHub && <><a href={`https://${data.GitHub}`} target="_blank">{data.GitHub}</a><span class="sep">|</span></>}
+              {data.LinkedIn && <a href={`https://${data.LinkedIn}`} target="_blank">{data.LinkedIn}</a>}
+            </p>
+          </>
+        );
+      })}
+    </header>
+  )}
 
-      const sectionType = schema.type || header?.data?.type;
-      const title = schema.title || header?.data?.title;
-      const fields = schema.fields || {};
-      const renderAsCategories = schema.renderAsCategories;
+  {/* Two-column layout */}
+  <div class="layout">
+    {/* Sidebar - Education & Skills */}
+    <aside class="sidebar">
+      {sidebarSections.map(({ folder, header, items }) => {
+        const schemaIndex = parseInt(folder.split("-")[0], 10);
+        const schema = sectionSchemas[schemaIndex] || {};
+        const sectionType = schema.type;
+        const title = schema.title;
+        const fields = schema.fields || {};
+        const renderAsCategories = schema.renderAsCategories;
 
-      return (
-        <section class={`section section--${sectionType}`}>
-          {title && <h2>{title}</h2>}
+        return (
+          <section class={`section section--${sectionType}`}>
+            {title && <h2>{title}</h2>}
 
-          {items.map((item) => {
-            const data = item.data;
-            const content = item.body;
+            {items.map((item) => {
+              const data = item.data;
+              const content = item.body;
 
-            {/* Personal section */}
-            if (sectionType === "personal") {
-              return (
-                <header class="personal">
-                  {data.name && <h1>{data.name}</h1>}
-                  {data.title && <p class="job-title">{data.title}</p>}
-                  <p class="contact">
-                    {data.email && <><a href={`mailto:${data.email}`}>{data.email}</a><span class="sep">|</span></>}
-                    {data.GitHub && <><a href={`https://${data.GitHub}`} target="_blank">{data.GitHub}</a><span class="sep">|</span></>}
-                    {data.LinkedIn && <a href={`https://${data.LinkedIn}`} target="_blank">{data.LinkedIn}</a>}
-                  </p>
-                </header>
-              );
-            }
-
-            {/* Summary section */}
-            if (sectionType === "plaintext") {
-              return <p class="summary">{content}</p>;
-            }
-
-            {/* Skills with categories */}
-            if (renderAsCategories) {
-              const categoryField = Object.keys(fields)[0];
-              const skills = content?.replace(/^- /gm, "").split("\n").filter(Boolean).join(", ");
-              return (
-                <div class="skill-category">
-                  {data[categoryField] && <h4>{data[categoryField]}</h4>}
-                  <span class="skill-list">{skills}</span>
-                </div>
-              );
-            }
-
-            {/* Education, Experience, Projects */}
-            {/* Group fields by type */}
-            const headerFields = Object.entries(fields).filter(([_, fc]) => getFieldType(fc) === "header");
-            const subheaderFields = Object.entries(fields).filter(([_, fc]) => getFieldType(fc) === "subheader");
-            const inlineFields = Object.entries(fields).filter(([_, fc]) => getFieldType(fc) === "inline");
-
-            return (
-              <article class="item">
-                {/* Header (title) */}
-                {headerFields.map(([fieldName]) => {
-                  const value = data[fieldName];
-                  return value ? <h3>{value}</h3> : null;
-                })}
-
-                {/* Subheader + Inline on same line */}
-                <div class="item-meta">
-                  <div class="item-meta-left">
-                    {subheaderFields.map(([fieldName]) => {
-                      const value = data[fieldName];
-                      return value ? <span class="subheader">{value}</span> : null;
-                    })}
+              {/* Skills with categories */}
+              if (renderAsCategories) {
+                const categoryField = Object.keys(fields)[0];
+                const skills = content?.replace(/^- /gm, "").split("\n").filter(Boolean).join(", ");
+                return (
+                  <div class="skill-category">
+                    {data[categoryField] && <h4>{data[categoryField]}</h4>}
+                    <span class="skill-list">{skills}</span>
                   </div>
-                  <div class="item-meta-right">
+                );
+              }
+
+              {/* Education */}
+              const headerFields = Object.entries(fields).filter(([_, fc]) => getFieldType(fc) === "header");
+              const subheaderFields = Object.entries(fields).filter(([_, fc]) => getFieldType(fc) === "subheader");
+              const inlineFields = Object.entries(fields).filter(([_, fc]) => getFieldType(fc) === "inline");
+
+              return (
+                <article class="item item--compact">
+                  {headerFields.map(([fieldName]) => {
+                    const value = data[fieldName];
+                    return value ? <h3>{value}</h3> : null;
+                  })}
+                  {subheaderFields.map(([fieldName]) => {
+                    const value = data[fieldName];
+                    return value ? <p class="subheader">{value}</p> : null;
+                  })}
+                  <p class="inline-info">
                     {inlineFields.map(([fieldName, fieldConfig], i) => {
                       const value = data[fieldName];
                       const prefix = getFieldPrefix(fieldConfig);
                       return value ? (
                         <>
                           {i > 0 && <span class="sep">|</span>}
-                          <span class="inline-field">{prefix}{value}</span>
+                          <span>{prefix}{value}</span>
                         </>
                       ) : null;
                     })}
-                  </div>
-                </div>
+                  </p>
+                </article>
+              );
+            })}
+          </section>
+        );
+      })}
+    </aside>
 
-                {content && <div class="content" set:html={renderContent(content)} />}
-              </article>
-            );
-          })}
-        </section>
-      );
-    })}
-  </main>
+    {/* Main Content - Summary, Experience, Projects */}
+    <main class="main-content">
+      {mainSections.map(({ folder, header, items }) => {
+        const schemaIndex = parseInt(folder.split("-")[0], 10);
+        const schema = sectionSchemas[schemaIndex] || {};
+        const sectionType = schema.type;
+        const title = schema.title;
+        const fields = schema.fields || {};
+
+        return (
+          <section class={`section section--${sectionType}`}>
+            {title && <h2>{title}</h2>}
+
+            {items.map((item) => {
+              const data = item.data;
+              const content = item.body;
+
+              {/* Summary section */}
+              if (sectionType === "plaintext") {
+                return <p class="summary">{content}</p>;
+              }
+
+              {/* Experience, Projects */}
+              const headerFields = Object.entries(fields).filter(([_, fc]) => getFieldType(fc) === "header");
+              const subheaderFields = Object.entries(fields).filter(([_, fc]) => getFieldType(fc) === "subheader");
+              const inlineFields = Object.entries(fields).filter(([_, fc]) => getFieldType(fc) === "inline");
+
+              return (
+                <article class="item">
+                  {headerFields.map(([fieldName]) => {
+                    const value = data[fieldName];
+                    return value ? <h3>{value}</h3> : null;
+                  })}
+
+                  <div class="item-meta">
+                    <div class="item-meta-left">
+                      {subheaderFields.map(([fieldName]) => {
+                        const value = data[fieldName];
+                        return value ? <span class="subheader">{value}</span> : null;
+                      })}
+                    </div>
+                    <div class="item-meta-right">
+                      {inlineFields.map(([fieldName, fieldConfig], i) => {
+                        const value = data[fieldName];
+                        const prefix = getFieldPrefix(fieldConfig);
+                        return value ? (
+                          <>
+                            {i > 0 && <span class="sep">|</span>}
+                            <span class="inline-field">{prefix}{value}</span>
+                          </>
+                        ) : null;
+                      })}
+                    </div>
+                  </div>
+
+                  {content && <div class="content" set:html={renderContent(content)} />}
+                </article>
+              );
+            })}
+          </section>
+        );
+      })}
+    </main>
+  </div>
 </Layout>

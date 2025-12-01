@@ -1,12 +1,12 @@
-# Resume Assets for Affinity Publisher
+# Resume Content & Astro Site
 
-This directory contains all the assets you need to design and update your resume in Affinity Publisher.
+Resume content managed as markdown files with YAML frontmatter. Powers both the Astro website and generates markdown/text outputs.
 
 ## Directory Structure
 
 ```
 resume/
-├── 00-config.md              # Universal field type styling
+├── 00-config.md              # Universal field type styling & theme
 ├── sections/                 # Source content (edit these!)
 │   ├── 00-personal/
 │   ├── 01-summary/
@@ -17,7 +17,7 @@ resume/
 ├── resume_content.md         # Generated markdown (don't edit directly)
 ├── text_content.txt          # Generated plain text (don't edit directly)
 └── scripts/
-    └── sync.py               # Run to regenerate output files
+    └── sync.py               # Generates output files & Astro schema
 ```
 
 ## Editing Content
@@ -25,6 +25,24 @@ resume/
 Edit files in `sections/` directories. Each section has:
 - `00-*.md` - Section header defining type, title, and field mappings
 - `01-*.md`, `02-*.md`, etc. - Individual items with frontmatter + content
+
+### Section Header Options
+
+```yaml
+---
+type: experience           # Section type (personal, plaintext, education, skills, experience, projects)
+title: PROFESSIONAL EXPERIENCE  # Section heading
+sidebar: true              # Show in sidebar column (default: false, main content)
+render_as_categories: true # For skills - render as category: items format
+fields:
+  position: header         # Field type mappings
+  company: subheader
+  duration: inline
+  gpa:
+    type: inline
+    prefix: "GPA "         # Custom prefix
+---
+```
 
 ### Example Item File
 ```yaml
@@ -38,7 +56,7 @@ duration: Jan 2024 - Present
 - Delivered great results
 ```
 
-After editing, run: `python3 -m scripts.sync`
+After editing, run: `npm run sync` (or `python3 -m resume.scripts.sync`)
 
 ## Field Types
 

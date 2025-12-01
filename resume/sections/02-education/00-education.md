@@ -1,6 +1,7 @@
 ---
 type: education
 title: EDUCATION
+sidebar: true
 fields:
   degree: header
   institution: subheader

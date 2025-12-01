@@ -2,11 +2,11 @@
 
 ✨ I'm Thy (pronounced `thee`)
 
-🎓 **Master of Science in Computer Science** from [**Arizona State University**](https://scai.engineering.asu.edu/)
-
 💼 **Information Systems Engineer** at **TIAA** - Cloud Infrastructure & Automation
 
 🌱 Expertise in **VMware Automation**, **Full-Stack Development**, and **UI/UX Design**
+
+🎓 **Master of Science in Computer Science** from [**Arizona State University**](https://scai.engineering.asu.edu/)
 
 📫 [LinkedIn](https://www.linkedin.com/in/thy-do) | [GitHub](https://github.com/thydo) | [thy.n.o.do@gmail.com](mailto:thy.n.o.do@gmail.com)
 
@@ -14,7 +14,7 @@
 
 ### This Repo
 
-Personal website and resume built with [Astro](https://astro.build/). Content lives in `resume/sections/` as markdown with YAML frontmatter.
+Personal website and resume at [thydo.github.io/thydo](https://thydo.github.io/thydo/) built with [Astro](https://astro.build/). Content lives in `resume/sections/` as markdown with YAML frontmatter.
 
 ```
 thydo/

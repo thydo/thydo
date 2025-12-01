@@ -261,6 +261,7 @@ def generate_astro_schema(data, theme_config):
         title = section.get('title', '')
         fields = section.get('fields', {})
         render_as_categories = section.get('render_as_categories', False)
+        sidebar = section.get('sidebar', False)
 
         # Convert fields to TypeScript-friendly format
         fields_ts = []
@@ -278,6 +279,7 @@ def generate_astro_schema(data, theme_config):
         section_schemas.append(f'''  {{
     type: "{section_type}",
     title: {f'"{title}"' if title else 'null'},
+    sidebar: {str(sidebar).lower()},
     renderAsCategories: {str(render_as_categories).lower()},
     fields: {{
 {fields_block}
@@ -305,6 +307,7 @@ export interface FieldConfig {{
 export interface SectionSchema {{
   type: string;
   title: string | null;
+  sidebar: boolean;
   renderAsCategories: boolean;
   fields: Record<string, FieldConfig>;
 }}

@@ -2,6 +2,23 @@
 """
 Resume Asset Synchronization Script
 Main entry point for syncing resume assets from markdown frontmatter files.
+
+Generates:
+  - resume_content.md - Markdown formatted resume
+  - text_content.txt - Plain text resume
+  - src/data/resume-schema.ts - TypeScript schema for Astro site
+
+To add/remove sections:
+  - Add/remove folders in resume/sections/ (e.g., 06-certifications/)
+  - Each section needs a 00-*.md header file defining type, title, fields
+  - Run this script to regenerate all outputs
+
+Section header options (in 00-*.md files):
+  - type: Section type identifier
+  - title: Display title (or null for no heading)
+  - sidebar: true/false - Controls placement in Astro layout
+  - fields: Field name to type mappings
+  - render_as_categories: For skills-style sections
 """
 
 import difflib
@@ -68,6 +85,7 @@ def load_section(section_dir):
     section = {
         'type': header.get('type', 'plaintext'),
         'title': header.get('title', ''),
+        'sidebar': header.get('sidebar', False),
         'fields': header.get('fields', {}),
         'render_as_categories': header.get('render_as_categories', False),
         'items': []
