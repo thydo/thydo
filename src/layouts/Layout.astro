@@ -136,24 +136,39 @@ const cssVars = themeToCSS(config.theme);
     margin-bottom: var(--item-margin);
   }
 
-  .item-header {
-    margin-bottom: 0.5rem;
-  }
-
-  .item-header h3 {
+  .item h3 {
     font-size: var(--font-size-h3);
     font-weight: 600;
     color: var(--color-text);
+    margin-bottom: 0.25rem;
   }
 
-  .item-header .subheader {
+  .item-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .item-meta-left .subheader {
     font-weight: 500;
     color: var(--color-text-secondary);
   }
 
-  .item-header .duration {
+  .item-meta-right {
     font-size: var(--font-size-small);
     color: var(--color-text-secondary);
+    text-align: right;
+  }
+
+  .item-meta-right .sep {
+    margin: 0 0.4rem;
+  }
+
+  .item-meta-right .inline-field {
+    white-space: nowrap;
   }
 
   /* Content lists */

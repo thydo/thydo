@@ -116,19 +116,47 @@ function renderContent(content: string): string {
             }
 
             {/* Education, Experience, Projects */}
+            {/* Helper to get field type (handles both string and object configs) */}
+            const getFieldType = (fieldConfig: any) =>
+              typeof fieldConfig === "string" ? fieldConfig : fieldConfig?.type;
+            const getFieldPrefix = (fieldConfig: any) =>
+              typeof fieldConfig === "object" ? fieldConfig?.prefix || "" : "";
+
+            {/* Group fields by type */}
+            const headerFields = Object.entries(fields).filter(([_, fc]) => getFieldType(fc) === "header");
+            const subheaderFields = Object.entries(fields).filter(([_, fc]) => getFieldType(fc) === "subheader");
+            const inlineFields = Object.entries(fields).filter(([_, fc]) => getFieldType(fc) === "inline");
+
             return (
               <article class="item">
-                <div class="item-header">
-                  {Object.entries(fields).map(([fieldName, fieldType]) => {
-                    const value = data[fieldName];
-                    if (!value) return null;
+                {/* Header (title) */}
+                {headerFields.map(([fieldName]) => {
+                  const value = data[fieldName];
+                  return value ? <h3>{value}</h3> : null;
+                })}
 
-                    if (fieldType === "header") return <h3>{value}</h3>;
-                    if (fieldType === "subheader") return <p class="subheader">{value}</p>;
-                    if (fieldType === "inline") return <span class="duration">{value}</span>;
-                    return null;
-                  })}
+                {/* Subheader + Inline on same line */}
+                <div class="item-meta">
+                  <div class="item-meta-left">
+                    {subheaderFields.map(([fieldName]) => {
+                      const value = data[fieldName];
+                      return value ? <span class="subheader">{value}</span> : null;
+                    })}
+                  </div>
+                  <div class="item-meta-right">
+                    {inlineFields.map(([fieldName, fieldConfig], i) => {
+                      const value = data[fieldName];
+                      const prefix = getFieldPrefix(fieldConfig);
+                      return value ? (
+                        <>
+                          {i > 0 && <span class="sep">|</span>}
+                          <span class="inline-field">{prefix}{value}</span>
+                        </>
+                      ) : null;
+                    })}
+                  </div>
                 </div>
+
                 {content && <div class="content" set:html={renderContent(content)} />}
               </article>
             );
