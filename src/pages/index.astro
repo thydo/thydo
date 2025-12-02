@@ -3,6 +3,13 @@ import { getCollection } from "astro:content";
 import Layout from "../layouts/Layout.astro";
 import { sectionSchemas, getFieldType, getFieldPrefix } from "../data/resume-schema";
 
+// Build navigation structure for progress bar
+interface NavItem {
+  id: string;
+  label: string;
+  type: 'major' | 'minor';
+}
+
 // Get all resume content
 const allEntries = await getCollection("resume");
 
@@ -73,6 +80,30 @@ const mainSections = sortedSections.filter(s => {
   return schema?.type !== "personal" && !schema?.sidebar;
 });
 
+// Build navigation items for progress bar (main content sections only)
+const navItems: NavItem[] = [];
+for (const { folder, items } of mainSections) {
+  const idx = parseInt(folder.split("-")[0], 10);
+  const schema = sectionSchemas[idx];
+  if (!schema?.title) continue;
+
+  // Add major node for section
+  const sectionId = folder.replace(/^\d+-/, '');
+  navItems.push({ id: sectionId, label: schema.title, type: 'major' });
+
+  // Add minor nodes for items with headers (experience, projects)
+  const headerField = Object.entries(schema.fields || {}).find(([_, fc]) => getFieldType(fc) === 'header')?.[0];
+  if (headerField && schema.type !== 'plaintext') {
+    for (const item of items) {
+      const itemName = item.id.split('/').pop()?.replace(/^\d+-/, '').replace('.md', '') || '';
+      const itemLabel = item.data[headerField];
+      if (itemLabel) {
+        navItems.push({ id: `${sectionId}-${itemName}`, label: itemLabel, type: 'minor' });
+      }
+    }
+  }
+}
+
 // Helper to render markdown content to HTML
 function renderContent(content: string): string {
   if (!content) return "";
@@ -106,7 +137,111 @@ function renderContent(content: string): string {
 }
 ---
 
-<Layout title="Thy Do - Software Engineer">
+<Layout title="Thy Do - Information Systems Engineer">
+  {/* Progress Bar Navigation */}
+  <nav class="progress-nav">
+    <div class="progress-line"></div>
+    <div class="progress-line-fill"></div>
+    {navItems.map((item) => (
+      <a href={`#${item.id}`} class={`progress-node progress-node--${item.type}`} data-target={item.id}>
+        <span class="progress-dot"></span>
+        <span class="progress-label">{item.label}</span>
+      </a>
+    ))}
+  </nav>
+
+  <script>
+    // Progress bar scroll tracking - element visibility based
+    const progressNav = document.querySelector('.progress-nav') as HTMLElement;
+    const progressFill = document.querySelector('.progress-line-fill') as HTMLElement;
+    const progressNodes = Array.from(document.querySelectorAll('.progress-node')) as HTMLElement[];
+
+    // Offset from viewport edge for triggering (40%)
+    const TRIGGER_OFFSET = 0.4;
+
+    function updateProgress() {
+      const windowHeight = window.innerHeight;
+
+      // Calculate scroll progress (0 = top, 1 = bottom)
+      const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrollProgress = scrollHeight > 0 ? scrollTop / scrollHeight : 0;
+
+      let lastVisitedIndex = -1;
+
+      progressNodes.forEach((node, index) => {
+        const targetId = node.getAttribute('data-target');
+        const target = targetId ? document.getElementById(targetId) : null;
+
+        if (target) {
+          const rect = target.getBoundingClientRect();
+          let isVisible = false;
+
+          if (scrollProgress <= 0.5) {
+            // Top half of content: trigger when section top is 40% from viewport top
+            isVisible = rect.top <= windowHeight * TRIGGER_OFFSET;
+          } else {
+            // Bottom half of content: trigger when section top enters bottom 40% of viewport
+            isVisible = rect.top <= windowHeight * (1 - TRIGGER_OFFSET);
+          }
+
+          if (isVisible) {
+            node.classList.add('visited');
+            lastVisitedIndex = index;
+          } else {
+            node.classList.remove('visited');
+          }
+        }
+      });
+
+      // Sync fill height with visited nodes
+      if (progressFill && progressNav) {
+        if (lastVisitedIndex >= 0 && progressNodes.length > 0) {
+          const lastVisitedNode = progressNodes[lastVisitedIndex];
+          const navRect = progressNav.getBoundingClientRect();
+          const nodeRect = lastVisitedNode.getBoundingClientRect();
+          const nodeCenter = nodeRect.top + nodeRect.height / 2 - navRect.top;
+          progressFill.style.height = `${nodeCenter - 8}px`;
+        } else {
+          progressFill.style.height = '0';
+        }
+      }
+    }
+
+    // Handle click navigation - scroll so section lands at consistent position
+    const JUMP_RATIO = 0.35;
+
+    progressNodes.forEach((node) => {
+      node.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = node.getAttribute('data-target');
+        const target = targetId ? document.getElementById(targetId) : null;
+
+        if (target) {
+          const windowHeight = window.innerHeight;
+          const targetRect = target.getBoundingClientRect();
+          const scrollTop = window.scrollY;
+          const targetPosition = scrollTop + targetRect.top - (windowHeight * JUMP_RATIO);
+
+          window.scrollTo({
+            top: Math.max(0, targetPosition),
+            behavior: 'smooth'
+          });
+
+          // Find the element to highlight (item for minor nodes, section for major)
+          const highlightTarget = target.closest('.item') || target.closest('.section') || target;
+          highlightTarget.classList.remove('highlight');
+          // Force reflow to restart animation
+          void highlightTarget.offsetWidth;
+          highlightTarget.classList.add('highlight');
+        }
+      });
+    });
+
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress();
+  </script>
+
   {/* Two-column layout */}
   <div class="layout">
     {/* Sidebar - Photo, Education & Skills */}
@@ -213,14 +348,17 @@ function renderContent(content: string): string {
         const sectionType = schema.type;
         const title = schema.title;
         const fields = schema.fields || {};
+        const sectionId = folder.replace(/^\d+-/, '');
 
         return (
-          <section class={`section section--${sectionType}`}>
+          <section id={sectionId} class={`section section--${sectionType}`}>
             {title && <h2>{title}</h2>}
 
             {items.map((item) => {
               const data = item.data;
               const content = item.body;
+              const itemName = item.id.split('/').pop()?.replace(/^\d+-/, '').replace('.md', '') || '';
+              const itemId = `${sectionId}-${itemName}`;
 
               {/* Summary section */}
               if (sectionType === "plaintext") {
@@ -233,7 +371,7 @@ function renderContent(content: string): string {
               const inlineFields = Object.entries(fields).filter(([_, fc]) => getFieldType(fc) === "inline");
 
               return (
-                <article class="item">
+                <article id={itemId} class="item">
                   {headerFields.map(([fieldName]) => {
                     const value = data[fieldName];
                     return value ? <h3>{value}</h3> : null;
@@ -269,4 +407,26 @@ function renderContent(content: string): string {
       })}
     </main>
   </div>
+
+  <footer class="site-footer">
+    <p>Made with Thy's hyperfocus and Clawdie 🦀</p>
+    <a href="https://github.com/thydo/thydo" target="_blank">View source</a>
+  </footer>
 </Layout>
+
+<style>
+  .site-footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    margin-top: 3rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+  .site-footer a {
+    color: var(--h2);
+    text-decoration: none;
+  }
+  .site-footer a:hover {
+    text-decoration: underline;
+  }
+</style>

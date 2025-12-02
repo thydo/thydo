@@ -34,7 +34,7 @@ from .config import (
     CONFIG_FILE, ASTRO_DATA_DIR, ASTRO_SCHEMA_FILE
 )
 from .logger import Logger
-from .render import generate_markdown, generate_text, generate_astro_schema
+from . import render_markdown, render_plaintext, render_astro
 
 
 def get_file_content(filepath):
@@ -151,11 +151,11 @@ def sync_all(quiet=False):
         old_txt = get_file_content(TXT_FILE)
         old_astro = get_file_content(ASTRO_SCHEMA_FILE)
 
-        # Generate content
-        md_content = generate_markdown(data)
-        txt_content = generate_text(data)
+        # Generate content using separate renderers
+        md_content = render_markdown.generate(data)
+        txt_content = render_plaintext.generate(data)
         os.makedirs(ASTRO_DATA_DIR, exist_ok=True)
-        astro_content = generate_astro_schema(data, theme_config)
+        astro_content = render_astro.generate(data, theme_config)
 
         # Check if anything changed
         has_changes = (

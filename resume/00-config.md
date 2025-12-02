@@ -15,10 +15,14 @@ field_styles:
 # Theme configuration for Astro site
 theme:
   colors:
-    primary: "#007A7A"
-    text: "#1a1a1a"
-    text_secondary: "#555"
+    h1: "#003940"
+    h2: "#006969"
+    h3: "#008a75"
+    h4: "#339c8c"
+    text: "#074747"
+    text_secondary: "#6b7878"
     background: "#fff"
+    highlight: "#deffff"
     border: "#e5e5e5"
 
   fonts:

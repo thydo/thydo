@@ -7,30 +7,29 @@ interface Props {
 
 const { title } = Astro.props;
 
-// Generate CSS variables from theme config
-const cssVars = `
-  :root {
-    --color-primary: ${theme.colors.primary};
-    --color-text: ${theme.colors.text};
-    --color-text-secondary: ${theme.colors.textSecondary};
-    --color-bg: ${theme.colors.background};
-    --color-border: ${theme.colors.border};
-
-    --font-family: ${theme.fonts.family};
-    --font-size-base: ${theme.fonts.sizeBase};
-    --font-size-h1: ${theme.fonts.sizeH1};
-    --font-size-h2: ${theme.fonts.sizeH2};
-    --font-size-h3: ${theme.fonts.sizeH3};
-    --font-size-small: ${theme.fonts.sizeSmall};
-
-    --max-width: ${theme.spacing.containerMaxWidth};
-    --container-padding: ${theme.spacing.containerPadding};
-    --section-margin: ${theme.spacing.sectionMargin};
-    --item-margin: ${theme.spacing.itemMargin};
-
-    --border-header: ${theme.borders.header};
-    --border-section: ${theme.borders.section};
-  }
+const css = `
+:root {
+  --h1: ${theme.colors.h1};
+  --h2: ${theme.colors.h2};
+  --h3: ${theme.colors.h3};
+  --h4: ${theme.colors.h4};
+  --text: ${theme.colors.text};
+  --text-secondary: ${theme.colors.textSecondary};
+  --bg: ${theme.colors.background};
+  --highlight: ${theme.colors.highlight};
+  --border: ${theme.colors.border};
+  --font: ${theme.fonts.family};
+  --size-base: ${theme.fonts.sizeBase};
+  --size-h1: ${theme.fonts.sizeH1};
+  --size-h2: ${theme.fonts.sizeH2};
+  --size-h3: ${theme.fonts.sizeH3};
+  --size-sm: ${theme.fonts.sizeSmall};
+  --padding: ${theme.spacing.containerPadding};
+  --section-gap: ${theme.spacing.sectionMargin};
+  --item-gap: ${theme.spacing.itemMargin};
+  --border-header: ${theme.borders.header};
+  --border-section: ${theme.borders.section};
+}
 `;
 ---
 
@@ -39,13 +38,16 @@ const cssVars = `
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Thy Do - Software Engineer specializing in cloud infrastructure, automation, and full-stack development" />
+    <meta name="description" content="Thy Ngoc Oanh Do - Information Systems Engineer specializing in private cloud infrastructure, VMware automation, and full-stack development at TIAA" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
+    <meta property="og:title" content="Thy Do - Information Systems Engineer" />
+    <meta property="og:description" content="Private cloud infrastructure, VMware Cloud Foundation, and full-stack development" />
+    <meta property="og:type" content="website" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <style set:html={cssVars}></style>
+    <style set:html={css}></style>
   </head>
   <body>
     <div class="container">
@@ -55,256 +57,222 @@ const cssVars = `
 </html>
 
 <style is:global>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
+  /* Reset */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    font-family: var(--font-family);
-    font-size: var(--font-size-base);
+    font-family: var(--font);
+    font-size: var(--size-base);
     line-height: 1.6;
-    color: var(--color-text);
-    background: var(--color-bg);
+    color: var(--text);
+    background: var(--bg);
   }
 
+  /* Layout */
   .container {
-    max-width: 1100px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: var(--container-padding);
+    padding: var(--padding);
   }
 
-  /* Two-column Layout */
   .layout {
+    --gap: 2.5rem;
     display: grid;
-    grid-template-columns: 320px 1fr;
-    gap: 3rem;
+    grid-template-columns: 385px 1fr;
   }
 
   .sidebar {
-    border-right: 1px solid var(--color-border);
-    padding-right: 2rem;
+    padding: 1.2rem var(--gap) 0 0;
+    border-right: 1px solid var(--border);
   }
 
-  /* Profile picture placeholder */
+  /* Skills section sticky follow */
+  .section--skills {
+    position: sticky;
+    top: 1rem;
+  }
+
+  .main-content {
+    padding-left: var(--gap);
+    padding-right: var(--gap);
+  }
+
+  /* Profile Photo */
   .profile-photo {
-    width: 180px;
-    height: 180px;
-    border-radius: 50%;
-    margin: 0 auto 1.5rem;
-    overflow: hidden;
-    border: 3px solid var(--color-primary);
-  }
-
-  .profile-photo img {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    aspect-ratio: 1;
+    margin-bottom: 2rem;
+    overflow: hidden;
   }
+  .profile-photo img { width: 100%; height: 100%; object-fit: cover; }
 
-  .sidebar .section:first-child h2 {
-    margin-top: 0;
-  }
-
-  .sidebar .item--compact {
-    margin-bottom: 1rem;
-  }
-
-  .sidebar .item--compact h3 {
-    font-size: 0.95rem;
-    margin-bottom: 0.15rem;
-  }
-
-  .sidebar .item--compact .subheader {
-    font-size: 0.85rem;
-    color: var(--color-text-secondary);
-    margin-bottom: 0.1rem;
-  }
-
-  .sidebar .item--compact .inline-info {
-    font-size: 0.8rem;
-    color: var(--color-text-secondary);
-  }
-
-  .sidebar .item--compact .inline-info .sep {
-    margin: 0 0.3rem;
-  }
-
-  .main-content .section:first-child h2 {
-    margin-top: 0;
-  }
-
-  /* Personal/Header Section */
+  /* Personal Header */
   .personal {
-    margin-bottom: var(--section-margin);
+    margin-bottom: var(--section-gap);
     padding-bottom: 1.5rem;
-    border-bottom: var(--border-header) var(--color-primary);
+    border-bottom: var(--border-header) var(--h2);
   }
-
-  .personal h1 {
-    font-size: var(--font-size-h1);
-    font-weight: 700;
-    color: var(--color-primary);
-    margin-bottom: 0.25rem;
-  }
-
-  .personal .job-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--color-text-secondary);
-    margin-bottom: 0.75rem;
-  }
-
-  .personal .contact {
-    font-size: var(--font-size-small);
-  }
-
-  .personal .contact a {
-    color: var(--color-primary);
-    text-decoration: none;
-  }
-
-  .personal .contact a:hover {
-    text-decoration: underline;
-  }
-
-  .personal .sep {
-    margin: 0 0.5rem;
-    color: var(--color-text-secondary);
-  }
+  .personal h1 { font-size: var(--size-h1); font-weight: 700; color: var(--h1); margin-bottom: 0.25rem; }
+  .personal .job-title { font-size: 1.1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); margin-bottom: 0.75rem; }
+  .personal .contact { font-size: var(--size-sm); }
+  .personal .contact a { color: var(--h2); text-decoration: none; }
+  .personal .contact a:hover { text-decoration: underline; }
+  .personal .sep { margin: 0 0.5rem; color: var(--text-secondary); }
 
   /* Section Headers */
+  .section {
+    padding: 0.5rem 1rem;
+    margin: 0 -1rem 0.5rem -1rem;
+    border-radius: 4px;
+  }
   .section h2 {
-    font-size: var(--font-size-h2);
+    font-size: var(--size-h2);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--color-primary);
-    border-bottom: var(--border-section) var(--color-border);
+    color: var(--h2);
+    border-bottom: var(--border-section) var(--border);
     padding-bottom: 0.5rem;
-    margin: var(--section-margin) 0 1rem;
+    margin: 0 0 0.75rem;
   }
+  .sidebar .section:first-child,
+  .main-content .section:first-child { margin-top: -0.5rem; }
 
-  /* Summary */
-  .summary {
-    color: var(--color-text-secondary);
-    line-height: 1.7;
+  /* Section highlight animation on jump */
+  .section.highlight {
+    animation: highlightFade 1s ease-out;
   }
 
   /* Skills */
-  .skill-category {
-    margin-bottom: 0.75rem;
-  }
+  .skill-category { margin-bottom: 0.75rem; }
+  .skill-category h4 { font-weight: 600; font-size: 0.95rem; display: inline; color: var(--h4); }
+  .skill-category h4::after { content: ": "; }
+  .skill-list { display: inline; color: var(--text); }
 
-  .skill-category h4 {
-    font-weight: 600;
-    font-size: 0.95rem;
-    display: inline;
-  }
-
-  .skill-category h4::after {
-    content: ": ";
-  }
-
-  .skill-list {
-    display: inline;
-    color: var(--color-text-secondary);
-  }
-
-  /* Items (Education, Experience, Projects) */
+  /* Items - use padding for highlight breathing room */
   .item {
-    margin-bottom: var(--item-margin);
+    padding: 0.5rem 1rem;
+    margin: 0 -1rem 0.25rem -1rem;
+    border-radius: 4px;
+  }
+  .item h3 { font-size: var(--size-h3); font-weight: 600; color: var(--h3); margin-bottom: 0.25rem; }
+
+  /* Item highlight animation on jump */
+  .item.highlight {
+    animation: highlightFade 1s ease-out;
+  }
+  @keyframes highlightFade {
+    0% { background-color: var(--highlight); }
+    100% { background-color: transparent; }
   }
 
-  .item h3 {
-    font-size: var(--font-size-h3);
-    font-weight: 600;
-    color: var(--color-text);
-    margin-bottom: 0.25rem;
-  }
+  .item-meta { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem; }
+  .item-meta-left .subheader { font-weight: 500; color: var(--text-secondary); }
+  .item-meta-right { font-size: var(--size-sm); color: var(--text-secondary); }
+  .item-meta-right .sep { margin: 0 0.4rem; }
 
-  .item-meta {
+  /* Sidebar compact items */
+  .sidebar .item--compact { margin-bottom: 1rem; }
+  .sidebar .item--compact h3 { font-size: 0.95rem; margin-bottom: 0.15rem; color: var(--h3); }
+  .sidebar .item--compact .subheader { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.1rem; }
+  .sidebar .item--compact .inline-info { font-size: 0.8rem; color: var(--text-secondary); }
+  .sidebar .item--compact .inline-info .sep { margin: 0 0.3rem; }
+
+  /* Content */
+  .summary { color: var(--text); line-height: 1.7; }
+  .content ul { margin-top: 0.5rem; padding-left: 1.25rem; list-style: disc; }
+  .content li { margin-bottom: 0.35rem; color: var(--text); }
+  .content strong { font-weight: 600; }
+  .subsection { margin: 1rem 0; }
+  .subsection h4 { font-size: 0.95rem; font-weight: 600; color: var(--h4); margin-bottom: 0.5rem; }
+
+  /* Progress Navigation */
+  .progress-nav {
+    position: fixed;
+    left: calc(50% + 600px - 2.5rem);
+    top: 50%;
+    transform: translateY(-50%);
     display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
+    flex-direction: column;
+    z-index: 100;
   }
 
-  .item-meta-left .subheader {
-    font-weight: 500;
-    color: var(--color-text-secondary);
+  .progress-line,
+  .progress-line-fill {
+    position: absolute;
+    left: 7px;
+    top: 8px;
+    width: 2px;
+    z-index: 1;
   }
+  .progress-line { bottom: 8px; background: var(--border); }
+  .progress-line-fill { height: 0; background: var(--h2); transition: height 0.15s ease-out; z-index: 2; }
 
-  .item-meta-right {
-    font-size: var(--font-size-small);
-    color: var(--color-text-secondary);
-    text-align: right;
+  .progress-node {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    padding: 0.6rem 0;
+    transition: all 0.2s ease;
   }
+  .progress-node:first-of-type { padding-top: 0; }
+  .progress-node:last-of-type { padding-bottom: 0; }
+  .progress-node:hover .progress-label { opacity: 1; }
+  .progress-node--major:hover .progress-dot { background: var(--h2); transform: scale(1.15); }
+  .progress-node--minor:hover .progress-dot { background: var(--h3); transform: scale(1.15); }
 
-  .item-meta-right .sep {
-    margin: 0 0.4rem;
+  .progress-dot {
+    position: relative;
+    z-index: 3;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--border);
+    border: 2px solid var(--bg);
+    box-shadow: 0 0 0 2px var(--border);
+    transition: all 0.2s ease;
+    flex-shrink: 0;
   }
+  .progress-node--major .progress-dot { width: 16px; height: 16px; }
+  .progress-node--minor { margin-left: 3px; }
+  .progress-node--minor .progress-dot { width: 10px; height: 10px; margin-left: 0; }
+  .progress-node--major.visited .progress-dot { background: var(--h2); box-shadow: 0 0 0 2px var(--h2); }
+  .progress-node--minor.visited .progress-dot { background: var(--h3); box-shadow: 0 0 0 2px var(--h3); }
 
-  .item-meta-right .inline-field {
+  .progress-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
     white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-
-  /* Content lists */
-  .content ul {
-    margin-top: 0.5rem;
-    padding-left: 1.25rem;
-    list-style: disc;
-  }
-
-  .content li {
-    margin-bottom: 0.35rem;
-    color: var(--color-text-secondary);
-  }
-
-  .content strong {
+  .progress-node--major .progress-label {
     font-weight: 600;
-    color: var(--color-text);
-  }
-
-  /* Subsections in experience */
-  .subsection {
-    margin: 1rem 0;
-  }
-
-  .subsection h4 {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--color-text);
-    margin-bottom: 0.5rem;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    opacity: 1;
   }
 
   /* Responsive */
-  @media (max-width: 900px) {
-    .layout {
-      grid-template-columns: 1fr;
-      gap: 2rem;
-    }
+  @media (max-width: 1400px) {
+    .progress-nav { right: 1rem; left: auto; }
+    .progress-label { display: none; }
+  }
 
-    .sidebar {
-      border-right: none;
-      border-bottom: 1px solid var(--color-border);
-      padding-right: 0;
-      padding-bottom: 2rem;
-    }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { border-right: none; border-bottom: 1px solid var(--border); padding: 0 0 2rem 0; }
+    .main-content { padding-left: 0; padding-right: 0; margin-top: 2rem; }
+    .progress-nav { display: none; }
   }
 
   @media (max-width: 600px) {
-    .container {
-      padding: 2rem 1rem;
-    }
-
-    .personal h1 {
-      font-size: 2rem;
-    }
+    .container { padding: 2rem 1rem; }
+    .personal h1 { font-size: 2rem; }
   }
 </style>

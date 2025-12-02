@@ -3,6 +3,7 @@ category: Concepts
 ---
 
 - Cloud Infrastructure & Automation
+- Virtual Machine Orchestration
 - Container Orchestration
 - Infrastructure as Code
 - API Integration

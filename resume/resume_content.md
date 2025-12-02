@@ -67,6 +67,7 @@ May 2022 | GPA 3.6/4.0
 
 **Concepts:**
 - Cloud Infrastructure & Automation
+- Virtual Machine Orchestration
 - Container Orchestration
 - Infrastructure as Code
 - API Integration

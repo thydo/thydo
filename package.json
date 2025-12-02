@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "sync": "python3 -m resume.scripts.sync",
-    "watch:sync": "chokidar \"resume/**/*.md\" -c \"python3 -m resume.scripts.sync -q\"",
+    "watch:sync": "chokidar \"resume/sections/**/*.md\" \"resume/00-config.md\" -c \"python3 -m resume.scripts.sync -q\"",
     "predev": "npm run sync",
     "dev": "concurrently \"astro dev\" \"npm run watch:sync\" --names astro,sync -c blue,yellow",
     "prebuild": "npm run sync",

@@ -84,11 +84,15 @@ export const sectionSchemas: SectionSchema[] = [
 
 export const theme = {
   colors: {
-    primary: "#007A7A",
-    text: "#1a1a1a",
-    textSecondary: "#555",
+    h1: "#003940",
+    h2: "#006969",
+    h3: "#008a75",
+    h4: "#339c8c",
+    text: "#074747",
+    textSecondary: "#6b7878",
     background: "#fff",
-    border: "#e5e5e5",
+    highlight: "#deffff",
+    border: "#e5e5e5"
   },
   fonts: {
     family: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
@@ -96,17 +100,17 @@ export const theme = {
     sizeH1: "2.5rem",
     sizeH2: "1.25rem",
     sizeH3: "1.05rem",
-    sizeSmall: "0.9rem",
+    sizeSmall: "0.9rem"
   },
   spacing: {
     containerMaxWidth: "800px",
     containerPadding: "3rem 2rem",
     sectionMargin: "2rem",
-    itemMargin: "1.5rem",
+    itemMargin: "1.5rem"
   },
   borders: {
     header: "2px solid",
-    section: "1px solid",
+    section: "1px solid"
   },
 } as const;
 
