@@ -232,7 +232,7 @@ function renderContent(content: string): string {
           const highlightTarget = target.closest('.item') || target.closest('.section') || target;
           highlightTarget.classList.remove('highlight');
           // Force reflow to restart animation
-          void highlightTarget.offsetWidth;
+          void (highlightTarget as HTMLElement).offsetWidth;
           highlightTarget.classList.add('highlight');
         }
       });
