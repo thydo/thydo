@@ -1,40 +1,28 @@
 #!/usr/bin/env python3
 """
 Resume Asset Synchronization Script
-Main entry point for syncing resume assets from markdown frontmatter files.
+Syncs resume assets from markdown frontmatter files.
 
 Generates:
   - resume_content.md - Markdown formatted resume
   - text_content.txt - Plain text resume
-  - src/data/resume-schema.ts - TypeScript schema for Astro site
 
 To add/remove sections:
   - Add/remove folders in resume/sections/ (e.g., 06-certifications/)
   - Each section needs a 00-*.md header file defining type, title, fields
-  - Run this script to regenerate all outputs
-
-Section header options (in 00-*.md files):
-  - type: Section type identifier
-  - title: Display title (or null for no heading)
-  - sidebar: true/false - Controls placement in Astro layout
-  - fields: Field name to type mappings
-  - render_as_categories: For skills-style sections
+  - Run this script to regenerate outputs
 """
 
 import difflib
-import json
 import os
 import sys
 from datetime import datetime
 
 import frontmatter
 
-from .config import (
-    SECTIONS_DIR, MD_FILE, TXT_FILE, JSON_FILE, LOG_FILE,
-    CONFIG_FILE, ASTRO_DATA_DIR, ASTRO_SCHEMA_FILE
-)
+from .config import SECTIONS_DIR, MD_FILE, TXT_FILE, LOG_FILE, COMPONENTS_README
 from .logger import Logger
-from . import render_markdown, render_plaintext, render_astro
+from . import render_markdown, render_plaintext, render_components_readme
 
 
 def get_file_content(filepath):
@@ -63,7 +51,6 @@ def load_section(section_dir):
     """Load a section from its directory."""
     files = sorted(os.listdir(section_dir))
 
-    # Find and load the header file (00-*.md)
     header_file = None
     item_files = []
 
@@ -77,7 +64,6 @@ def load_section(section_dir):
     if not header_file:
         return None
 
-    # Load header config
     header_path = os.path.join(section_dir, header_file)
     with open(header_path, 'r') as f:
         header = frontmatter.load(f)
@@ -85,22 +71,17 @@ def load_section(section_dir):
     section = {
         'type': header.get('type', 'plaintext'),
         'title': header.get('title', ''),
-        'sidebar': header.get('sidebar', False),
         'fields': header.get('fields', {}),
         'render_as_categories': header.get('render_as_categories', False),
         'items': []
     }
 
-    # Load item files
     for item_file in item_files:
         item_path = os.path.join(section_dir, item_file)
         with open(item_path, 'r') as f:
             item = frontmatter.load(f)
 
-        # Build item dict from frontmatter
         item_data = dict(item.metadata)
-
-        # Add content body if present (for responsibilities, lists, etc.)
         if item.content.strip():
             item_data['_content'] = item.content.strip()
 
@@ -113,7 +94,6 @@ def load_resume_data():
     """Load resume data from frontmatter files."""
     sections = []
 
-    # Get all section directories, sorted by numeric prefix
     section_dirs = sorted([
         d for d in os.listdir(SECTIONS_DIR)
         if os.path.isdir(os.path.join(SECTIONS_DIR, d))
@@ -128,66 +108,49 @@ def load_resume_data():
     return {'sections': sections}
 
 
-def load_theme_config():
-    """Load theme configuration from 00-config.md."""
-    if os.path.exists(CONFIG_FILE):
-        with open(CONFIG_FILE, 'r') as f:
-            config = frontmatter.load(f)
-            return dict(config.metadata)
-    return {}
-
-
 def sync_all(quiet=False):
     """Sync all resume formats from frontmatter source files."""
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     try:
-        # Load data
         data = load_resume_data()
-        theme_config = load_theme_config()
 
-        # Capture old content for diff
         old_md = get_file_content(MD_FILE)
         old_txt = get_file_content(TXT_FILE)
-        old_astro = get_file_content(ASTRO_SCHEMA_FILE)
+        old_readme = get_file_content(COMPONENTS_README)
 
-        # Generate content using separate renderers
         md_content = render_markdown.generate(data)
         txt_content = render_plaintext.generate(data)
-        os.makedirs(ASTRO_DATA_DIR, exist_ok=True)
-        astro_content = render_astro.generate(data, theme_config)
+        readme_content = render_components_readme.generate(data)
 
-        # Check if anything changed
         has_changes = (
             old_md != md_content or
             old_txt != txt_content or
-            old_astro != astro_content
+            old_readme != readme_content
         )
 
-        # Write files
         with open(MD_FILE, 'w') as f:
             f.write(md_content)
         with open(TXT_FILE, 'w') as f:
             f.write(txt_content)
-        with open(ASTRO_SCHEMA_FILE, 'w') as f:
-            f.write(astro_content)
+        with open(COMPONENTS_README, 'w') as f:
+            f.write(readme_content)
 
         if quiet:
             if has_changes:
                 print(f"[{timestamp}] ✓ Synced (changes detected)")
                 show_diff(old_md, md_content, 'resume_content.md')
                 show_diff(old_txt, txt_content, 'text_content.txt')
-                show_diff(old_astro, astro_content, 'src/data/resume-schema.ts')
-            # Silent when no changes in quiet mode
+                show_diff(old_readme, readme_content, 'src/components/README.md')
         else:
             print(f"\n{'='*60}")
             print(f"Resume Sync - {timestamp}")
             print(f"{'='*60}")
             print(f"✓ Loaded {len(data.get('sections', []))} sections")
-            print(f"✓ Updated: resume_content.md, text_content.txt, resume-schema.ts")
+            print(f"✓ Updated: resume_content.md, text_content.txt, src/components/README.md")
             show_diff(old_md, md_content, 'resume_content.md')
             show_diff(old_txt, txt_content, 'text_content.txt')
-            show_diff(old_astro, astro_content, 'src/data/resume-schema.ts')
+            show_diff(old_readme, readme_content, 'src/components/README.md')
             print(f"\n✅ All assets synchronized successfully!")
             print(f"{'='*60}\n")
 
@@ -204,7 +167,6 @@ def main():
                         help='Quiet mode - only output when changes detected')
     args = parser.parse_args()
 
-    # Set up logging (skip in quiet mode)
     if not args.quiet:
         logger = Logger(LOG_FILE)
         sys.stdout = logger
@@ -225,7 +187,6 @@ def main():
 
     finally:
         if not args.quiet:
-            # Save log (most recent at top) and restore stdout
             logger.save_log()
             sys.stdout = logger.terminal
 

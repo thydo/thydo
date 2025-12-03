@@ -1,0 +1,106 @@
+---
+/**
+ * Personal Section - Photo + Personal Info
+ */
+import { getCollection } from "astro:content";
+
+const allEntries = await getCollection("resume");
+const personalEntries = allEntries.filter(e => e.id.startsWith("00-personal/"));
+const personalItem = personalEntries.find(e => !e.id.includes("/00-"));
+
+const photoFiles = Object.keys(import.meta.glob('/public/photo.{jpg,JPG,jpeg,JPEG,png,PNG}', { eager: true }));
+const photoPath = photoFiles[0]?.replace('/public', '/thydo') || '/thydo/photo.jpg';
+---
+
+<header class="header-row">
+  <div class="profile-photo">
+    <img src={photoPath} alt="Profile photo" />
+  </div>
+
+  {personalItem && (
+    <div class="personal">
+      {personalItem.data.name && <h1>{personalItem.data.name}</h1>}
+      {personalItem.data.title && <p class="job-title">{personalItem.data.title}</p>}
+      <p class="contact">
+        {personalItem.data.email && (
+          <>
+            <a href={`mailto:${personalItem.data.email}`}>{personalItem.data.email}</a>
+            <span class="sep">|</span>
+          </>
+        )}
+        {personalItem.data.GitHub && (
+          <>
+            <a href={`https://${personalItem.data.GitHub}`} target="_blank">{personalItem.data.GitHub}</a>
+            <span class="sep">|</span>
+          </>
+        )}
+        {personalItem.data.LinkedIn && (
+          <a href={`https://${personalItem.data.LinkedIn}`} target="_blank">{personalItem.data.LinkedIn}</a>
+        )}
+      </p>
+    </div>
+  )}
+</header>
+
+<style is:global>
+  .header-row {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+    margin-bottom: var(--section-gap);
+    padding-bottom: 1.5rem;
+    border-bottom: var(--border-header) var(--h2);
+  }
+
+  .profile-photo {
+    flex-shrink: 0;
+    width: 200px;
+  }
+  .profile-photo img {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+  }
+
+  .personal { flex: 1; }
+  .personal h1 {
+    font-size: var(--size-h1);
+    font-weight: 700;
+    color: var(--h1);
+    margin-bottom: 0.25rem;
+  }
+  .personal .job-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+  }
+  .personal .contact { font-size: var(--size-sm); }
+  .personal .contact a { color: var(--accent); }
+  .personal .contact a:hover { text-decoration: underline; }
+  .personal .sep { margin: 0 0.5rem; color: var(--text-secondary); }
+
+  @media (max-width: 900px) {
+    .header-row {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .profile-photo { width: 180px; }
+    .personal .contact {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .personal .sep { display: none; }
+    .personal .contact a { display: block; }
+  }
+
+  @media (max-width: 600px) {
+    .personal h1 { font-size: 2rem; }
+    .profile-photo { width: 150px; }
+  }
+</style>

@@ -19,10 +19,9 @@ TXT_FILE = os.path.join(RESUME_DIR, "text_content.txt")
 JSON_FILE = os.path.join(RESUME_DIR, "resume_data.json")
 LOG_FILE = os.path.join(SCRIPTS_DIR, "sync.log")
 
-# Output files - Astro src folder
-ASTRO_SRC_DIR = os.path.join(PROJECT_ROOT, "src")
-ASTRO_DATA_DIR = os.path.join(ASTRO_SRC_DIR, "data")
-ASTRO_SCHEMA_FILE = os.path.join(ASTRO_DATA_DIR, "resume-schema.ts")
+# Astro components README
+ASTRO_COMPONENTS_DIR = os.path.join(PROJECT_ROOT, "src", "components")
+COMPONENTS_README = os.path.join(ASTRO_COMPONENTS_DIR, "README.md")
 
 
 def load_field_styles():

@@ -1,0 +1,35 @@
+---
+/**
+ * Education Section
+ */
+import { getCollection } from "astro:content";
+
+const allEntries = await getCollection("resume");
+const items = allEntries
+  .filter(e => e.id.startsWith("02-education/") && !e.id.includes("/00-"))
+  .sort((a, b) => a.id.localeCompare(b.id));
+---
+
+<section class="section section--education">
+  <h2>Education</h2>
+
+  {items.map((item) => (
+    <article class="item item--compact">
+      {item.data.degree && <h3>{item.data.degree}</h3>}
+      {item.data.institution && <p class="subheader">{item.data.institution}</p>}
+      <p class="inline-info">
+        {item.data.graduation && <span>{item.data.graduation}</span>}
+        {item.data.graduation && item.data.gpa && <span class="sep">|</span>}
+        {item.data.gpa && <span>GPA {item.data.gpa}</span>}
+      </p>
+    </article>
+  ))}
+</section>
+
+<style is:global>
+  .sidebar .item--compact { margin-bottom: 1rem; }
+  .sidebar .item--compact h3 { font-size: 0.95rem; margin-bottom: 0.15rem; color: var(--h3); }
+  .sidebar .item--compact .subheader { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.1rem; }
+  .sidebar .item--compact .inline-info { font-size: 0.8rem; color: var(--text-secondary); }
+  .sidebar .item--compact .inline-info .sep { margin: 0 0.3rem; }
+</style>

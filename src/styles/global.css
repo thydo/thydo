@@ -1,0 +1,81 @@
+:root {
+  /* Colors */
+  --h1: #294D4C;
+  --h2: #2A7064;
+  --h3: #7B5350;
+  --h4: #B2766B;
+  --text: #27302F;
+  --text-secondary: #887F8A;
+  --bg: #fff;
+  --highlight: #BBD9C9;
+  --border: #E8E3E8;
+  --accent: #EDBE52;
+
+  /* Typography */
+  --font: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --size-base: 15px;
+  --size-h1: 2.5rem;
+  --size-h2: 1.25rem;
+  --size-h3: 1.05rem;
+  --size-sm: 0.9rem;
+
+  /* Spacing */
+  --padding: 3rem 2rem;
+  --section-gap: 2rem;
+  --item-gap: 1.5rem;
+
+  /* Borders */
+  --border-header: 2px solid;
+  --border-section: 1px solid;
+}
+
+/* Reset */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font);
+  font-size: var(--size-base);
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Page layout */
+.page-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: var(--gap);
+}
+
+.container {
+  max-width: 1200px;
+  padding: var(--padding);
+}
+
+.nav-column {
+  flex-shrink: 0;
+  width: 150px;
+}
+
+/* Highlight animation (used by multiple components) */
+@keyframes highlightFade {
+  0% { background-color: var(--highlight); }
+  100% { background-color: transparent; }
+}
+
+@media (max-width: 1400px) {
+  .nav-column { display: none; }
+}
+
+@media (max-width: 600px) {
+  .container { padding: 2rem 1rem; }
+}

@@ -1,0 +1,249 @@
+---
+/**
+ * Progress Navigation - Scroll progress bar with section/item nodes
+ */
+import { getCollection } from "astro:content";
+
+// Sections to include in nav (by directory prefix)
+// Requires frontmatter: title (for major node label)
+// Optional: fields.header (field name for minor node labels)
+const NAV_SECTIONS = ['01-summary', '04-experience', '05-projects'];
+
+interface NavItem {
+  id: string;
+  label: string;
+  type: 'major' | 'minor';
+}
+
+const navItems: NavItem[] = [];
+const allEntries = await getCollection("resume");
+
+for (const sectionDir of NAV_SECTIONS) {
+  const header = allEntries.find(e => e.id.startsWith(`${sectionDir}/00-`));
+  if (!header) continue;
+
+  // Use section name from directory (e.g., "01-summary" -> "summary")
+  const sectionId = sectionDir.replace(/^\d+-/, '');
+  const sectionTitle = header.data.title;
+
+  // Find which field is designated as "header" (e.g., fields: { position: "header" } -> "position")
+  const fields = header.data.fields || {};
+  const headerField = Object.entries(fields).find(([_, v]) => v === 'header')?.[0];
+
+  // Add major node for section
+  navItems.push({
+    id: sectionId,
+    label: sectionTitle,
+    type: 'major'
+  });
+
+  // If section has a header field defined, add minor nodes for each item
+  if (headerField) {
+    const items = allEntries
+      .filter(e => e.id.startsWith(`${sectionDir}/`) && !e.id.includes("/00-"))
+      .sort((a, b) => a.id.localeCompare(b.id));
+
+    for (const item of items) {
+      const itemName = item.id.split('/').pop()?.replace(/^\d+-/, '').replace('.md', '') || '';
+      const label = item.data[headerField];
+      if (label) {
+        navItems.push({
+          id: `${sectionId}-${itemName}`,
+          label,
+          type: 'minor'
+        });
+      }
+    }
+  }
+}
+---
+
+<nav class="progress-nav">
+  <div class="progress-line"></div>
+  <div class="progress-line-fill"></div>
+  {navItems.map((item) => (
+    <a href={`#${item.id}`} class={`progress-node progress-node--${item.type}`} data-target={item.id}>
+      <span class="progress-dot"></span>
+      <span class="progress-label">{item.label}</span>
+    </a>
+  ))}
+</nav>
+
+<script>
+  const progressNav = document.querySelector('.progress-nav') as HTMLElement;
+  const progressFill = document.querySelector('.progress-line-fill') as HTMLElement;
+  const progressNodes = Array.from(document.querySelectorAll('.progress-node')) as HTMLElement[];
+
+  const BASE_TRIGGER = 0.4; // Normal trigger point from top
+
+  function updateProgress() {
+    const windowHeight = window.innerHeight;
+    const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+
+    // First half: flat at BASE_TRIGGER
+    // Second half: power curve from BASE_TRIGGER to 1.0
+    // Power scales with doc length: longer docs need sharper curve
+    const scrollProgress = scrollHeight > 0 ? scrollTop / scrollHeight : 0;
+    const docHeight = document.documentElement.scrollHeight;
+    const power = Math.max(4, (docHeight / windowHeight) * 10); // Scale with doc length
+
+    let triggerOffset = BASE_TRIGGER;
+    if (scrollProgress > 0.5) {
+      const t = (scrollProgress - 0.5) * 2; // 0 to 1 for second half
+      const curved = Math.pow(t, power);
+      triggerOffset = BASE_TRIGGER + curved * (1 - BASE_TRIGGER);
+    }
+
+    let lastVisitedIndex = -1;
+
+    progressNodes.forEach((node, index) => {
+      const targetId = node.getAttribute('data-target');
+      const target = targetId ? document.getElementById(targetId) : null;
+
+      if (target) {
+        const rect = target.getBoundingClientRect();
+        const isVisible = rect.top <= windowHeight * triggerOffset;
+
+        if (isVisible) {
+          node.classList.add('visited');
+          lastVisitedIndex = index;
+        } else {
+          node.classList.remove('visited');
+        }
+      }
+    });
+
+    // Mark latest visited node as active (for label wrapping)
+    progressNodes.forEach((node, index) => {
+      if (index === lastVisitedIndex) {
+        node.classList.add('active');
+      } else {
+        node.classList.remove('active');
+      }
+    });
+
+    if (progressFill && progressNav) {
+      if (lastVisitedIndex >= 0 && progressNodes.length > 0) {
+        const lastVisitedNode = progressNodes[lastVisitedIndex];
+        const navRect = progressNav.getBoundingClientRect();
+        const nodeRect = lastVisitedNode.getBoundingClientRect();
+        const nodeCenter = nodeRect.top + nodeRect.height / 2 - navRect.top;
+        progressFill.style.height = `${nodeCenter - 8}px`;
+      } else {
+        progressFill.style.height = '0';
+      }
+    }
+  }
+
+  const JUMP_RATIO = 0.35;
+
+  progressNodes.forEach((node) => {
+    node.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetId = node.getAttribute('data-target');
+      const target = targetId ? document.getElementById(targetId) : null;
+
+      if (target) {
+        const windowHeight = window.innerHeight;
+        const targetRect = target.getBoundingClientRect();
+        const scrollTop = window.scrollY;
+        const targetPosition = scrollTop + targetRect.top - (windowHeight * JUMP_RATIO);
+
+        window.scrollTo({
+          top: Math.max(0, targetPosition),
+          behavior: 'smooth'
+        });
+
+        const highlightTarget = target.closest('.item') || target.closest('.section') || target;
+        highlightTarget.classList.remove('highlight');
+        void (highlightTarget as HTMLElement).offsetWidth;
+        highlightTarget.classList.add('highlight');
+      }
+    });
+  });
+
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+</script>
+
+<style is:global>
+  .progress-nav {
+    position: sticky;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .progress-line,
+  .progress-line-fill {
+    position: absolute;
+    left: 7px;
+    top: 8px;
+    width: 2px;
+    z-index: 1;
+  }
+  .progress-line { bottom: 8px; background: var(--border); }
+  .progress-line-fill { height: 0; background: var(--h4); transition: height 0.15s ease-out; z-index: 2; }
+
+  .progress-node {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    padding: 0.4rem 0;
+    transition: padding 0.2s ease;
+  }
+  .progress-node:first-of-type { padding-top: 0; }
+  .progress-node:last-of-type { padding-bottom: 0; }
+  .progress-node:hover .progress-label { opacity: 1; }
+  .progress-node--major:hover .progress-dot { background: var(--h2); transform: scale(1.15); }
+  .progress-node--minor:hover .progress-dot { background: var(--h3); transform: scale(1.15); }
+
+  .progress-dot {
+    position: relative;
+    z-index: 3;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--border);
+    border: 2px solid var(--bg);
+    box-shadow: 0 0 0 2px var(--border);
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+  .progress-node--major .progress-dot { width: 16px; height: 16px; }
+  .progress-node--minor { margin-left: 3px; }
+  .progress-node--minor .progress-dot { width: 10px; height: 10px; }
+  .progress-node--major.visited .progress-dot { background: var(--h2); box-shadow: 0 0 0 2px var(--h2); }
+  .progress-node--minor.visited .progress-dot { background: var(--h3); box-shadow: 0 0 0 2px var(--h3); }
+
+  .progress-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  /* Active state: hovered or latest visited - show label and wrap text */
+  .progress-node:hover .progress-label,
+  .progress-node.active .progress-label {
+    opacity: 1;
+    white-space: normal;
+    overflow: visible;
+    max-width: 200px;
+  }
+  .progress-node--major .progress-label {
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    opacity: 1;
+  }
+
+</style>
