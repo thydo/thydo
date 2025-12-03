@@ -32,39 +32,3 @@ import {
 
   <Footer />
 </Layout>
-
-<style is:global>
-  .layout {
-    --gap: 2.5rem;
-    display: grid;
-    grid-template-columns: 350px 1fr;
-  }
-
-  .sidebar {
-    padding: 0 var(--gap) 0 0;
-    border-right: 1px solid var(--border);
-  }
-
-  .main-content {
-    padding-left: var(--gap);
-  }
-
-  .sidebar .section:first-child,
-  .main-content .section:first-child {
-    margin-top: -0.5rem;
-  }
-
-  @media (max-width: 900px) {
-    .layout { grid-template-columns: 1fr; }
-    .sidebar {
-      border-right: none;
-      border-bottom: 1px solid var(--border);
-      padding: 0 0 2rem 0;
-    }
-    .main-content {
-      padding-left: 0;
-      padding-right: 0;
-      margin-top: 2rem;
-    }
-  }
-</style>

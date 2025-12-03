@@ -2,12 +2,9 @@
 /**
  * Skills Section
  */
-import { getCollection } from "astro:content";
+import { getResumeItems } from "../../utils";
 
-const allEntries = await getCollection("resume");
-const items = allEntries
-  .filter(e => e.id.startsWith("03-skills/") && !e.id.includes("/00-"))
-  .sort((a, b) => a.id.localeCompare(b.id));
+const items = await getResumeItems("03-skills");
 ---
 
 <section class="section section--skills">
@@ -24,19 +21,14 @@ const items = allEntries
   })}
 </section>
 
-<style is:global>
-  .section--skills {
-    position: sticky;
-    top: 1rem;
-  }
-
-  .skill-category { margin-bottom: 0.75rem; }
+<style>
+  .section--skills { position: sticky; top: var(--space-lg); }
   .skill-category h4 {
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: var(--size-h4);
     display: inline;
     color: var(--h4);
   }
   .skill-category h4::after { content: ": "; }
-  .skill-list { display: inline; color: var(--text); }
+  .skill-list { display: inline; }
 </style>

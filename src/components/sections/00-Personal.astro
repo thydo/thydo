@@ -42,24 +42,24 @@ const photoPath = photoFiles[0]?.replace('/public', '/thydo') || '/thydo/photo.j
   )}
 </header>
 
-<style is:global>
+<style>
   .header-row {
     display: flex;
-    gap: 2rem;
+    gap: var(--space-2xl);
     align-items: flex-start;
     margin-bottom: var(--section-gap);
-    padding-bottom: 1.5rem;
+    padding-bottom: var(--space-xl);
     border-bottom: var(--border-header) var(--h2);
   }
 
   .profile-photo {
     flex-shrink: 0;
-    width: 200px;
+    width: var(--photo-width);
   }
   .profile-photo img {
     width: 100%;
     height: auto;
-    border-radius: 4px;
+    border-radius: var(--radius);
   }
 
   .personal { flex: 1; }
@@ -67,20 +67,18 @@ const photoPath = photoFiles[0]?.replace('/public', '/thydo') || '/thydo/photo.j
     font-size: var(--size-h1);
     font-weight: 700;
     color: var(--h1);
-    margin-bottom: 0.25rem;
+    margin-bottom: var(--space-xs);
   }
   .personal .job-title {
-    font-size: 1.1rem;
+    font-size: var(--size-lg);
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: var(--tracking-wide);
     color: var(--text-secondary);
-    margin-bottom: 0.75rem;
+    margin-bottom: var(--space-md);
   }
   .personal .contact { font-size: var(--size-sm); }
-  .personal .contact a { color: var(--accent); }
-  .personal .contact a:hover { text-decoration: underline; }
-  .personal .sep { margin: 0 0.5rem; color: var(--text-secondary); }
+  .personal .sep { margin: 0 var(--space-sm); color: var(--text-secondary); }
 
   @media (max-width: 900px) {
     .header-row {
@@ -88,19 +86,19 @@ const photoPath = photoFiles[0]?.replace('/public', '/thydo') || '/thydo/photo.j
       align-items: center;
       text-align: center;
     }
-    .profile-photo { width: 180px; }
+    .profile-photo { width: var(--photo-width-tablet); }
     .personal .contact {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 0.5rem;
+      gap: var(--space-sm);
     }
     .personal .sep { display: none; }
     .personal .contact a { display: block; }
   }
 
   @media (max-width: 600px) {
-    .personal h1 { font-size: 2rem; }
-    .profile-photo { width: 150px; }
+    .personal h1 { font-size: var(--space-2xl); }
+    .profile-photo { width: var(--photo-width-mobile); }
   }
 </style>

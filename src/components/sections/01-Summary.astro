@@ -2,10 +2,10 @@
 /**
  * Summary Section
  */
-import { getCollection } from "astro:content";
+import { getResumeItems } from "../../utils";
 
-const allEntries = await getCollection("resume");
-const item = allEntries.find(e => e.id.startsWith("01-summary/") && !e.id.includes("/00-"));
+const items = await getResumeItems("01-summary");
+const item = items[0];
 ---
 
 <section id="summary" class="section section--plaintext">
@@ -13,9 +13,6 @@ const item = allEntries.find(e => e.id.startsWith("01-summary/") && !e.id.includ
   {item?.body && <p class="summary">{item.body}</p>}
 </section>
 
-<style is:global>
-  .summary {
-    color: var(--text);
-    line-height: 1.7;
-  }
+<style>
+  .summary { line-height: var(--leading-relaxed); }
 </style>

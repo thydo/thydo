@@ -6,7 +6,7 @@
   --h4: #B2766B;
   --text: #27302F;
   --text-secondary: #887F8A;
-  --bg: #fff;
+  --bg: #fffdfa;
   --highlight: #BBD9C9;
   --border: #E8E3E8;
   --accent: #EDBE52;
@@ -17,16 +17,55 @@
   --size-h1: 2.5rem;
   --size-h2: 1.25rem;
   --size-h3: 1.05rem;
+  --size-h4: 0.95rem;
+  --size-lg: 1.1rem;
   --size-sm: 0.9rem;
+  --size-xs: 0.85rem;
+  --size-xxs: 0.8rem;
+  --size-label: 0.75rem;
+  --tracking: 0.05em;
+  --tracking-wide: 0.1em;
+  --leading: 1.6;
+  --leading-relaxed: 1.7;
 
-  /* Spacing */
-  --padding: 3rem 2rem;
-  --section-gap: 2rem;
-  --item-gap: 1.5rem;
+  /* Spacing scale */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 0.75rem;
+  --space-lg: 1rem;
+  --space-xl: 1.5rem;
+  --space-2xl: 2rem;
+  --space-3xl: 3rem;
+
+  /* Layout */
+  --container-max: 1200px;
+  --sidebar-width: 350px;
+  --nav-column-width: 150px;
+  --photo-width: 200px;
+  --photo-width-tablet: 180px;
+  --photo-width-mobile: 150px;
+  --gap: 2.5rem;
+  --padding: var(--space-3xl) var(--space-2xl);
+  --section-gap: var(--space-2xl);
+  --item-gap: var(--space-xl);
 
   /* Borders */
   --border-header: 2px solid;
   --border-section: 1px solid;
+  --radius: 4px;
+
+  /* Nav */
+  --dot-sm: 10px;
+  --dot-md: 12px;
+  --dot-lg: 16px;
+  --dot-line: 2px;
+  --nav-label-width: 120px;
+  --nav-label-width-active: 200px;
+
+  /* Breakpoints (for reference, used in media queries) */
+  --bp-mobile: 600px;
+  --bp-tablet: 900px;
+  --bp-desktop: 1400px;
 }
 
 /* Reset */
@@ -35,7 +74,7 @@
 body {
   font-family: var(--font);
   font-size: var(--size-base);
-  line-height: 1.6;
+  line-height: var(--leading);
   color: var(--text);
   background: var(--bg);
 }
@@ -57,16 +96,91 @@ a:hover {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: var(--container-max);
   padding: var(--padding);
 }
 
 .nav-column {
   flex-shrink: 0;
-  width: 150px;
+  width: var(--nav-column-width);
 }
 
-/* Highlight animation (used by multiple components) */
+/* Sections */
+.section {
+  margin-bottom: var(--section-gap);
+}
+.section.highlight { animation: highlightFade 1s ease-out; }
+
+.section h2 {
+  font-size: var(--size-h2);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking);
+  color: var(--h2);
+  border-bottom: var(--border-section) var(--border);
+  padding-bottom: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+/* Items */
+.item, .item--compact, .skill-category, .subsection {
+  margin-bottom: var(--item-gap);
+}
+.section > :last-child,
+.item > :last-child,
+.subsection > :last-child {
+  margin-bottom: 0;
+}
+
+.item.highlight { animation: highlightFade 1s ease-out; }
+
+.item h3 {
+  font-size: var(--size-h3);
+  font-weight: 600;
+  color: var(--h3);
+}
+
+.item-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+.item-meta-left .subheader { font-weight: 500; color: var(--text-secondary); }
+.item-meta-right { font-size: var(--size-sm); color: var(--text-secondary); }
+.item-meta-right .sep { margin: 0 var(--space-sm); }
+
+.content ul { padding-left: var(--space-xl); list-style: disc; }
+.content strong { font-weight: 600; }
+
+.subsection h4 {
+  font-size: var(--size-h4);
+  font-weight: 600;
+  color: var(--h4);
+}
+
+/* Resume layout */
+.layout {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+}
+
+.sidebar {
+  padding: 0 var(--gap) 0 0;
+  border-right: var(--border-section) var(--border);
+}
+
+.main-content {
+  padding-left: var(--gap);
+}
+
+.sidebar .section:first-child,
+.main-content .section:first-child {
+  margin-top: calc(var(--space-sm) * -1);
+}
+
+/* Highlight animation */
 @keyframes highlightFade {
   0% { background-color: var(--highlight); }
   100% { background-color: transparent; }
@@ -76,6 +190,19 @@ a:hover {
   .nav-column { display: none; }
 }
 
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar {
+    border-right: none;
+    padding: 0;
+  }
+  .main-content {
+    padding-left: 0;
+    padding-right: 0;
+    margin-top: var(--space-lg);
+  }
+}
+
 @media (max-width: 600px) {
-  .container { padding: 2rem 1rem; }
+  .container { padding: var(--space-2xl) var(--space-lg); }
 }

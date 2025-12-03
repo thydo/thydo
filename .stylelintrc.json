@@ -1,0 +1,35 @@
+{
+  "extends": ["stylelint-config-standard"],
+  "rules": {
+    "declaration-property-value-allowed-list": [
+      {
+        "/^margin/": ["/^var\\(--/", "0", "auto", "/^calc\\(/", "/^0 var\\(--/"],
+        "/^padding/": ["/^var\\(--/", "0", "/^calc\\(/", "/^0 var\\(--/"],
+        "/^gap/": ["/^var\\(--/", "0"],
+        "font-size": ["/^var\\(--/", "inherit", "100%"],
+        "letter-spacing": ["/^var\\(--/", "normal", "inherit"],
+        "line-height": ["/^var\\(--/", "normal", "inherit", "/^[0-9.]+$/"],
+        "border-radius": ["/^var\\(--/", "0", "50%", "inherit"],
+        "max-width": ["/^var\\(--/", "none", "100%", "/^calc\\(/"],
+        "width": ["/^var\\(--/", "auto", "100%", "/^calc\\(/", "fit-content"]
+      },
+      { "severity": "warning" }
+    ],
+    "selector-class-pattern": null,
+    "custom-property-pattern": null,
+    "no-descending-specificity": null,
+    "declaration-block-single-line-max-declarations": null,
+    "rule-empty-line-before": null,
+    "comment-empty-line-before": null,
+    "value-keyword-case": null,
+    "keyframes-name-pattern": null,
+    "media-feature-range-notation": null
+  },
+  "overrides": [
+    {
+      "files": ["**/*.astro"],
+      "customSyntax": "postcss-html"
+    }
+  ],
+  "ignoreFiles": ["dist/**/*", "node_modules/**/*"]
+}

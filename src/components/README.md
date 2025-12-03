@@ -5,27 +5,29 @@ Auto-generated from `resume/sections/`. Run `npm run sync` to update.
 ## Available Sections
 
 | Component     | Title                   | Items |
-|---------------|-------------------------|---|
-| 00-Personal   | (no title)              | 1 |
-| 01-Plaintext  | SUMMARY                 | 1 |
-| 02-Education  | EDUCATION               | 2 |
-| 03-Skills     | TECHNICAL SKILLS        | 3 |
-| 04-Experience | PROFESSIONAL EXPERIENCE | 6 |
-| 05-Projects   | PROJECTS                | 3 |
+|---------------|-------------------------|-------|
+| 00-Personal   | (no title)              | 1     |
+| 01-Plaintext  | SUMMARY                 | 1     |
+| 02-Education  | EDUCATION               | 2     |
+| 03-Skills     | TECHNICAL SKILLS        | 3     |
+| 04-Experience | PROFESSIONAL EXPERIENCE | 6     |
+| 05-Projects   | PROJECTS                | 3     |
 
 ## Structure
 
 ```
 src/
 ├── layouts/
-│   └── Layout.astro      # Page wrapper (imports global.css)
+│   └── Layout.astro      # HTML shell (imports global.css, includes ProgressNav)
 ├── styles/
-│   └── global.css        # CSS variables, reset, base styles
+│   └── global.css        # CSS variables, reset, shared styles
+├── utils/
+│   ├── resume.ts         # Resume content utilities (getResumeItems, renderContent)
+│   └── index.ts          # Barrel export
 ├── components/
 │   ├── Header.astro      # HTML <head> content
 │   ├── ProgressNav.astro # Scroll progress bar
 │   ├── Footer.astro      # Site footer
-│   ├── ResumeLayout.astro# Two-column layout
 │   ├── index.ts          # Barrel export
 │   └── sections/         # Resume section components
 │       ├── 00-Personal.astro
@@ -36,7 +38,7 @@ src/
 │       ├── 05-Projects.astro
 │       └── index.ts      # Barrel export
 └── pages/
-    └── index.astro       # Main page
+    └── index.astro       # Page composition (layout grid, section order)
 ```
 
 ## Usage
@@ -94,12 +96,9 @@ Create `src/components/sections/06-Certifications.astro`:
 
 ```astro
 ---
-import { getCollection } from "astro:content";
+import { getResumeItems } from "../../utils";
 
-const allEntries = await getCollection("resume");
-const items = allEntries
-  .filter(e => e.id.startsWith("06-certifications/") && !e.id.includes("/00-"))
-  .sort((a, b) => a.id.localeCompare(b.id));
+const items = await getResumeItems("06-certifications");
 ---
 
 <section id="certifications" class="section section--certifications">
@@ -120,13 +119,15 @@ const items = allEntries
   ))}
 </section>
 
-<style is:global>
-  /* Add section-specific styles here */
+<style>
+  /* Component-scoped styles (Astro auto-scopes these) */
   .section--certifications {
     /* Custom styles */
   }
 </style>
 ```
+
+> **Note:** Use `<style>` (scoped) for component-specific styles. Only use `<style is:global>` when styles must apply outside the component — and prefer putting those in `global.css` instead.
 
 ### 3. Export the component
 
@@ -142,11 +143,13 @@ Edit `src/pages/index.astro`:
 import { Certifications } from "../components";
 
 // Add to sidebar or main content:
-<ResumeLayout>
-  <Fragment slot="main">
-    <Certifications />
-  </Fragment>
-</ResumeLayout>
+<aside class="sidebar">
+  <Certifications />
+</aside>
+// or
+<main class="main-content">
+  <Certifications />
+</main>
 ```
 
 ### 5. Update progress nav (optional)
@@ -165,20 +168,20 @@ This updates the markdown/text outputs and regenerates this README.
 
 Available theme variables (defined in `src/styles/global.css`):
 
-| Variable | Description |
-|----------|-------------|
-| `--h1` | Primary heading color |
-| `--h2` | Section heading color |
-| `--h3` | Item heading color |
-| `--h4` | Subheading color |
-| `--text` | Body text color |
-| `--text-secondary` | Secondary/muted text |
-| `--bg` | Background color |
-| `--highlight` | Highlight animation color |
-| `--border` | Border color |
-| `--accent` | Accent/link color |
-| `--size-h1` through `--size-sm` | Font sizes |
-| `--section-gap`, `--item-gap` | Spacing |
+| Variable                              | Description              |
+|---------------------------------------|--------------------------|
+| `--h1` through `--h4`                 | Heading colors           |
+| `--text`, `--text-secondary`          | Body text colors         |
+| `--bg`, `--highlight`, `--border`     | UI colors                |
+| `--accent`                            | Link/accent color        |
+| `--size-h1` through `--size-label`    | Font sizes               |
+| `--space-xs` through `--space-3xl`    | Spacing scale            |
+| `--tracking`, `--tracking-wide`       | Letter spacing           |
+| `--leading`, `--leading-relaxed`      | Line height              |
+| `--section-gap`, `--item-gap`         | Component spacing        |
+| `--sidebar-width`, `--container-max`  | Layout widths            |
+| `--radius`                            | Border radius            |
+| `--border-header`, `--border-section` | Border styles            |
 
 ## Common Patterns
 

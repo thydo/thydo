@@ -168,7 +168,7 @@ for (const sectionDir of NAV_SECTIONS) {
 
 </script>
 
-<style is:global>
+<style>
   .progress-nav {
     position: sticky;
     top: 50%;
@@ -182,7 +182,7 @@ for (const sectionDir of NAV_SECTIONS) {
     position: absolute;
     left: 7px;
     top: 8px;
-    width: 2px;
+    width: var(--dot-line);
     z-index: 1;
   }
   .progress-line { bottom: 8px; background: var(--border); }
@@ -191,9 +191,9 @@ for (const sectionDir of NAV_SECTIONS) {
   .progress-node {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: var(--space-md);
     text-decoration: none;
-    padding: 0.4rem 0;
+    padding: var(--space-sm) 0;
     transition: padding 0.2s ease;
   }
   .progress-node:first-of-type { padding-top: 0; }
@@ -205,28 +205,28 @@ for (const sectionDir of NAV_SECTIONS) {
   .progress-dot {
     position: relative;
     z-index: 3;
-    width: 12px;
-    height: 12px;
+    width: var(--dot-md);
+    height: var(--dot-md);
     border-radius: 50%;
     background: var(--border);
-    border: 2px solid var(--bg);
-    box-shadow: 0 0 0 2px var(--border);
+    border: var(--dot-line) solid var(--bg);
+    box-shadow: 0 0 0 var(--dot-line) var(--border);
     transition: all 0.2s ease;
     flex-shrink: 0;
   }
-  .progress-node--major .progress-dot { width: 16px; height: 16px; }
-  .progress-node--minor { margin-left: 3px; }
-  .progress-node--minor .progress-dot { width: 10px; height: 10px; }
-  .progress-node--major.visited .progress-dot { background: var(--h2); box-shadow: 0 0 0 2px var(--h2); }
-  .progress-node--minor.visited .progress-dot { background: var(--h3); box-shadow: 0 0 0 2px var(--h3); }
+  .progress-node--major .progress-dot { width: var(--dot-lg); height: var(--dot-lg); }
+  .progress-node--minor { margin-left: var(--space-xs); }
+  .progress-node--minor .progress-dot { width: var(--dot-sm); height: var(--dot-sm); }
+  .progress-node--major.visited .progress-dot { background: var(--h2); box-shadow: 0 0 0 var(--dot-line) var(--h2); }
+  .progress-node--minor.visited .progress-dot { background: var(--h3); box-shadow: 0 0 0 var(--dot-line) var(--h3); }
 
   .progress-label {
-    font-size: 0.75rem;
+    font-size: var(--size-label);
     color: var(--text-secondary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 120px;
+    max-width: var(--nav-label-width);
     opacity: 0;
     transition: opacity 0.2s ease;
   }
@@ -236,13 +236,13 @@ for (const sectionDir of NAV_SECTIONS) {
     opacity: 1;
     white-space: normal;
     overflow: visible;
-    max-width: 200px;
+    max-width: var(--nav-label-width-active);
   }
   .progress-node--major .progress-label {
     font-weight: 600;
-    font-size: 0.8rem;
+    font-size: var(--size-xxs);
     text-transform: uppercase;
-    letter-spacing: 0.03em;
+    letter-spacing: var(--tracking);
     opacity: 1;
   }
 

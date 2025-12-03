@@ -9,7 +9,9 @@
     "dev": "concurrently \"astro dev\" \"npm run watch:sync\" --names astro,sync -c blue,yellow",
     "prebuild": "npm run sync",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "lint:css": "stylelint \"src/**/*.{css,astro}\"",
+    "lint:global": "grep -r 'is:global' --include='*.astro' --include='*.ts' --include='*.css' src/components && echo '⚠️  Warning: is:global found in components - consider moving to global.css' || true"
   },
   "dependencies": {
     "astro": "^5.0.0",
@@ -17,6 +19,9 @@
   },
   "devDependencies": {
     "chokidar-cli": "^3.0.0",
-    "concurrently": "^9.2.1"
+    "concurrently": "^9.2.1",
+    "postcss-html": "^1.8.0",
+    "stylelint": "^16.26.1",
+    "stylelint-config-standard": "^39.0.1"
   }
 }

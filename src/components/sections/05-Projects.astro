@@ -2,43 +2,16 @@
 /**
  * Projects Section
  */
-import { getCollection } from "astro:content";
+import { getResumeItems, getItemName, renderContent } from "../../utils";
 
-const allEntries = await getCollection("resume");
-const items = allEntries
-  .filter(e => e.id.startsWith("05-projects/") && !e.id.includes("/00-"))
-  .sort((a, b) => a.id.localeCompare(b.id));
-
-function renderContent(content: string): string {
-  if (!content) return "";
-  let html = content.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-  const cleanItem = (item: string) => item.replace(/^-\s*/, "").trim();
-  const sections = html.split(/(?=<strong>[^<]+:<\/strong>)/);
-
-  return sections.map(section => {
-    const headerMatch = section.match(/^<strong>([^<]+):<\/strong>/);
-    if (headerMatch) {
-      const header = headerMatch[1];
-      const rest = section.replace(/^<strong>[^<]+:<\/strong>\s*/, "");
-      const items = rest.split(/\n-\s*/).filter(Boolean);
-      const listHtml = items.map(item => `<li>${cleanItem(item)}</li>`).join("\n");
-      return `<div class="subsection"><h4>${header}</h4><ul>${listHtml}</ul></div>`;
-    }
-    const items = section.split(/\n-\s*/).filter(Boolean);
-    if (items.length > 0) {
-      const listHtml = items.map(item => `<li>${cleanItem(item)}</li>`).join("\n");
-      return `<ul>${listHtml}</ul>`;
-    }
-    return section;
-  }).join("\n");
-}
+const items = await getResumeItems("05-projects");
 ---
 
 <section id="projects" class="section section--projects">
   <h2>Projects</h2>
 
   {items.map((item) => {
-    const itemName = item.id.split('/').pop()?.replace(/^\d+-/, '').replace('.md', '') || '';
+    const itemName = getItemName(item);
     return (
       <article id={`projects-${itemName}`} class="item">
         {item.data.title && <h3>{item.data.title}</h3>}

@@ -2,12 +2,9 @@
 /**
  * Education Section
  */
-import { getCollection } from "astro:content";
+import { getResumeItems } from "../../utils";
 
-const allEntries = await getCollection("resume");
-const items = allEntries
-  .filter(e => e.id.startsWith("02-education/") && !e.id.includes("/00-"))
-  .sort((a, b) => a.id.localeCompare(b.id));
+const items = await getResumeItems("02-education");
 ---
 
 <section class="section section--education">
@@ -26,10 +23,9 @@ const items = allEntries
   ))}
 </section>
 
-<style is:global>
-  .sidebar .item--compact { margin-bottom: 1rem; }
-  .sidebar .item--compact h3 { font-size: 0.95rem; margin-bottom: 0.15rem; color: var(--h3); }
-  .sidebar .item--compact .subheader { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.1rem; }
-  .sidebar .item--compact .inline-info { font-size: 0.8rem; color: var(--text-secondary); }
-  .sidebar .item--compact .inline-info .sep { margin: 0 0.3rem; }
+<style>
+  .item--compact h3 { font-size: var(--size-h4); color: var(--h3); }
+  .item--compact .subheader { font-size: var(--size-xs); color: var(--text-secondary); }
+  .item--compact .inline-info { font-size: var(--size-xxs); color: var(--text-secondary); }
+  .item--compact .inline-info .sep { margin: 0 var(--space-xs); }
 </style>

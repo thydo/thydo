@@ -2,43 +2,16 @@
 /**
  * Experience Section
  */
-import { getCollection } from "astro:content";
+import { getResumeItems, getItemName, renderContent } from "../../utils";
 
-const allEntries = await getCollection("resume");
-const items = allEntries
-  .filter(e => e.id.startsWith("04-experience/") && !e.id.includes("/00-"))
-  .sort((a, b) => a.id.localeCompare(b.id));
-
-function renderContent(content: string): string {
-  if (!content) return "";
-  let html = content.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-  const cleanItem = (item: string) => item.replace(/^-\s*/, "").trim();
-  const sections = html.split(/(?=<strong>[^<]+:<\/strong>)/);
-
-  return sections.map(section => {
-    const headerMatch = section.match(/^<strong>([^<]+):<\/strong>/);
-    if (headerMatch) {
-      const header = headerMatch[1];
-      const rest = section.replace(/^<strong>[^<]+:<\/strong>\s*/, "");
-      const items = rest.split(/\n-\s*/).filter(Boolean);
-      const listHtml = items.map(item => `<li>${cleanItem(item)}</li>`).join("\n");
-      return `<div class="subsection"><h4>${header}</h4><ul>${listHtml}</ul></div>`;
-    }
-    const items = section.split(/\n-\s*/).filter(Boolean);
-    if (items.length > 0) {
-      const listHtml = items.map(item => `<li>${cleanItem(item)}</li>`).join("\n");
-      return `<ul>${listHtml}</ul>`;
-    }
-    return section;
-  }).join("\n");
-}
+const items = await getResumeItems("04-experience");
 ---
 
 <section id="experience" class="section section--experience">
   <h2>Professional Experience</h2>
 
   {items.map((item) => {
-    const itemName = item.id.split('/').pop()?.replace(/^\d+-/, '').replace('.md', '') || '';
+    const itemName = getItemName(item);
     return (
       <article id={`experience-${itemName}`} class="item">
         {item.data.position && <h3>{item.data.position}</h3>}
@@ -55,63 +28,3 @@ function renderContent(content: string): string {
     );
   })}
 </section>
-
-<style is:global>
-  .section {
-    padding: 0.5rem 1rem;
-    margin: 0 -1rem 0.5rem -1rem;
-    border-radius: 4px;
-  }
-
-  .section h2 {
-    font-size: var(--size-h2);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--h2);
-    border-bottom: var(--border-section) var(--border);
-    padding-bottom: 0.5rem;
-    margin: 0 0 0.75rem;
-  }
-
-  .section.highlight { animation: highlightFade 1s ease-out; }
-
-  .item {
-    padding: 0.5rem 1rem;
-    margin: 0 -1rem 0.25rem -1rem;
-    border-radius: 4px;
-  }
-
-  .item h3 {
-    font-size: var(--size-h3);
-    font-weight: 600;
-    color: var(--h3);
-    margin-bottom: 0.25rem;
-  }
-
-  .item.highlight { animation: highlightFade 1s ease-out; }
-
-  .item-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-  }
-  .item-meta-left .subheader { font-weight: 500; color: var(--text-secondary); }
-  .item-meta-right { font-size: var(--size-sm); color: var(--text-secondary); }
-  .item-meta-right .sep { margin: 0 0.4rem; }
-
-  .content ul { margin-top: 0.5rem; padding-left: 1.25rem; list-style: disc; }
-  .content li { margin-bottom: 0.35rem; color: var(--text); }
-  .content strong { font-weight: 600; }
-
-  .subsection { margin: 1rem 0; }
-  .subsection h4 {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--h4);
-    margin-bottom: 0.5rem;
-  }
-</style>
