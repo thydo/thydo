@@ -22,7 +22,8 @@ from pathlib import Path
 
 import frontmatter
 
-from .config import SECTIONS_DIR, MD_FILE, TXT_FILE, COMPONENTS_README
+from .config import SECTIONS_DIR, MD_FILE, TXT_FILE, COMPONENTS_README, LOG_FILE
+from .logger import Logger
 from .render import generate_markdown, generate_plaintext, generate_readme
 
 
@@ -141,12 +142,22 @@ def main():
         print(f"Error: {SECTIONS_DIR} not found!", file=sys.stderr)
         return 1
 
+    # Use logger to track updates (unless quiet mode)
+    logger = None
+    if not args.quiet:
+        logger = Logger(LOG_FILE)
+        sys.stdout = logger
+
     try:
         sync(quiet=args.quiet)
         return 0
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
         return 1
+    finally:
+        if logger:
+            logger.save_log()
+            sys.stdout = logger.terminal
 
 
 if __name__ == "__main__":

@@ -17,6 +17,7 @@ SECTIONS_DIR = RESUME_DIR / "sections"
 MD_FILE = RESUME_DIR / "resume_content.md"
 TXT_FILE = RESUME_DIR / "text_content.txt"
 COMPONENTS_README = PROJECT_ROOT / "src" / "components" / "README.md"
+LOG_FILE = _SCRIPTS_DIR / "sync.log"
 
 # Load field styles from config
 _CONFIG_FILE = RESUME_DIR / "00-config.md"
