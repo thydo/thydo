@@ -49,48 +49,7 @@ thydo/
 |----------------------|-------------------------------------------------------------------------|
 | `resume/00-config.md`| Theme colors, fonts, spacing, borders - synced to `resume-schema.ts`   |
 | `resume/sections/`   | Markdown files with YAML frontmatter - each folder is a section        |
-| `resume/scripts/`    | Python sync scripts (see below)                                         |
-
----
-
-## Sync Scripts
-
-The `resume/scripts/` directory contains Python scripts that sync resume content to various output formats.
-
-### Files
-
-| File        | Purpose                                                                 |
-|-------------|-------------------------------------------------------------------------|
-| `sync.py`   | Main entry point - loads sections, generates outputs, tracks changes    |
-| `render.py` | Renders resume data to markdown, plaintext, and README formats          |
-| `config.py` | Path configuration and field style loading                              |
-| `logger.py` | Tracks resume content changes (prepends to `sync.log`, latest at top)   |
-
-### Usage
-
-```bash
-# Normal sync - outputs to console and logs to sync.log
-npm run sync
-# or
-python3 -m resume.scripts.sync
-
-# Quiet mode - only outputs when changes detected (no logging)
-npm run sync -- -q
-# or
-python3 -m resume.scripts.sync -q
-
-# Watch mode - auto-syncs on file changes (used by npm run dev)
-npm run watch:sync
-```
-
-### Outputs
-
-| Output                       | Description                                      |
-|------------------------------|--------------------------------------------------|
-| `resume/resume_content.md`   | Markdown resume (for PDF conversion)             |
-| `resume/text_content.txt`    | Plain text resume (for ATS systems)              |
-| `src/components/README.md`   | Auto-generated component documentation           |
-| `resume/scripts/sync.log`    | Change history (latest at top, gitignored)       |
+| `resume/scripts/`    | Python sync scripts - see [resume/README.md](resume/README.md)          |
 
 ---
 

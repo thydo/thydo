@@ -17,7 +17,10 @@ resume/
 ├── resume_content.md         # Generated markdown
 ├── text_content.txt          # Generated plain text
 └── scripts/
-    └── sync.py               # Generates markdown + text outputs
+    ├── sync.py               # Main entry - loads sections, generates outputs
+    ├── render.py             # Renders to markdown, plaintext, and README
+    ├── config.py             # Path configuration and field style loading
+    └── logger.py             # Tracks content changes (prepends to sync.log)
 ```
 
 ## Editing Content
@@ -48,7 +51,30 @@ duration: Jan 2024 - Present
 | `subheader` | `**Value**` | Secondary info (company, institution) |
 | `inline` | `Value \| Value` | Same-line fields (date, GPA) |
 
-## Output Files
+## Sync Scripts
 
-- **resume_content.md** - Markdown formatted version
-- **text_content.txt** - Plain text for copy-paste
+### Usage
+
+```bash
+# Normal sync - outputs to console and logs to sync.log
+npm run sync
+# or
+python3 -m resume.scripts.sync
+
+# Quiet mode - only outputs when changes detected (no logging)
+npm run sync -- -q
+# or
+python3 -m resume.scripts.sync -q
+
+# Watch mode - auto-syncs on file changes (used by npm run dev)
+npm run watch:sync
+```
+
+### Output Files
+
+| Output                       | Description                                      |
+|------------------------------|--------------------------------------------------|
+| `resume_content.md`          | Markdown resume (for PDF conversion)             |
+| `text_content.txt`           | Plain text resume (for ATS systems)              |
+| `../src/components/README.md`| Auto-generated component documentation           |
+| `scripts/sync.log`           | Change history (latest at top, gitignored)       |
