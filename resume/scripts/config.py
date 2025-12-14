@@ -3,34 +3,24 @@ Configuration for resume sync script.
 Defines file paths and loads field type styling from config file.
 """
 
-import os
+from pathlib import Path
+
 import frontmatter
 
-# File paths
-SCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
-RESUME_DIR = os.path.dirname(SCRIPTS_DIR)
-PROJECT_ROOT = os.path.dirname(RESUME_DIR)
-SECTIONS_DIR = os.path.join(RESUME_DIR, "sections")
-CONFIG_FILE = os.path.join(RESUME_DIR, "00-config.md")
+# Paths
+_SCRIPTS_DIR = Path(__file__).parent
+RESUME_DIR = _SCRIPTS_DIR.parent
+PROJECT_ROOT = RESUME_DIR.parent
+SECTIONS_DIR = RESUME_DIR / "sections"
 
-# Output files - resume folder
-MD_FILE = os.path.join(RESUME_DIR, "resume_content.md")
-TXT_FILE = os.path.join(RESUME_DIR, "text_content.txt")
-JSON_FILE = os.path.join(RESUME_DIR, "resume_data.json")
-LOG_FILE = os.path.join(SCRIPTS_DIR, "sync.log")
+# Output files
+MD_FILE = RESUME_DIR / "resume_content.md"
+TXT_FILE = RESUME_DIR / "text_content.txt"
+COMPONENTS_README = PROJECT_ROOT / "src" / "components" / "README.md"
 
-# Astro components README
-ASTRO_COMPONENTS_DIR = os.path.join(PROJECT_ROOT, "src", "components")
-COMPONENTS_README = os.path.join(ASTRO_COMPONENTS_DIR, "README.md")
-
-
-def load_field_styles():
-    """Load universal field type styling from config file."""
-    if os.path.exists(CONFIG_FILE):
-        with open(CONFIG_FILE, 'r') as f:
-            config = frontmatter.load(f)
-            return config.get('field_styles', {})
-    return {}
-
-
-FIELD_STYLES = load_field_styles()
+# Load field styles from config
+_CONFIG_FILE = RESUME_DIR / "00-config.md"
+FIELD_STYLES = {}
+if _CONFIG_FILE.exists():
+    with open(_CONFIG_FILE) as f:
+        FIELD_STYLES = frontmatter.load(f).get('field_styles', {})
