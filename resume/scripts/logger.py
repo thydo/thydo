@@ -1,6 +1,8 @@
 """
-Logger class for resume sync script.
-Writes to both console and log file, with most recent entries at top.
+Logger for tracking resume content changes.
+
+Captures sync output to both console and log file, with entries prepended
+(most recent at top) to prioritize viewing latest changes.
 """
 
 import sys
