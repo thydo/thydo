@@ -179,9 +179,10 @@ def generate_plaintext(data):
 
 
 def generate_readme(data):
-    """Generate components README with section structure."""
+    """Generate components README with full component documentation."""
     sections = data.get('sections', [])
 
+    # Build sections table (auto-generated from resume data)
     rows = []
     for idx, section in enumerate(sections):
         section_type = section.get('type', 'unknown')
@@ -190,30 +191,59 @@ def generate_readme(data):
         component = f"{idx:02d}-{section_type.title()}"
         rows.append((component, title, str(len(items))))
 
-    if not rows:
-        return "# Components\n\nNo sections found.\n"
-
-    # Calculate column widths
-    widths = [
-        max(len(r[0]) for r in rows),
-        max(len(r[1]) for r in rows),
-        max(5, max(len(r[2]) for r in rows)),
-    ]
-
-    # Build table
-    header = f"| {'Component'.ljust(widths[0])} | {'Title'.ljust(widths[1])} | {'Items'.ljust(widths[2])} |"
-    sep = f"|{'-' * (widths[0] + 2)}|{'-' * (widths[1] + 2)}|{'-' * (widths[2] + 2)}|"
-    lines = [f"| {r[0].ljust(widths[0])} | {r[1].ljust(widths[1])} | {r[2].ljust(widths[2])} |" for r in rows]
+    if rows:
+        widths = [
+            max(len(r[0]) for r in rows),
+            max(len(r[1]) for r in rows),
+            max(5, max(len(r[2]) for r in rows)),
+        ]
+        header = f"| {'Component'.ljust(widths[0])} | {'Title'.ljust(widths[1])} | {'Items'.ljust(widths[2])} |"
+        sep = f"|{'-' * (widths[0] + 2)}|{'-' * (widths[1] + 2)}|{'-' * (widths[2] + 2)}|"
+        lines = [f"| {r[0].ljust(widths[0])} | {r[1].ljust(widths[1])} | {r[2].ljust(widths[2])} |" for r in rows]
+        sections_table = f"{header}\n{sep}\n" + chr(10).join(lines)
+    else:
+        sections_table = "No sections found."
 
     return f'''# Components
 
 Auto-generated from `resume/sections/`. Run `npm run sync` to update.
 
-## Available Sections
+## Section Components
 
-{header}
-{sep}
-{chr(10).join(lines)}
+Resume content sections in `sections/`:
 
-For structure, usage, adding new sections, CSS variables, and common patterns, see the main [README.md](../../README.md).
+{sections_table}
+
+## Layout Components
+
+| Component       | Purpose                                              |
+|-----------------|------------------------------------------------------|
+| `Header.astro`  | `<head>` meta tags, fonts, SEO                       |
+| `Footer.astro`  | Page footer with credits                             |
+| `ProgressNav.astro` | Scroll progress bar with section navigation nodes |
+
+## Utils
+
+Helpers in `utils/resume.ts`:
+
+| Function | Purpose |
+|----------|---------|
+| `getResumeItems(prefix)` | Get all items from a section (excludes header files) |
+| `getItemName(entry)` | Extract item name from file path |
+| `renderContent(content)` | Convert markdown content to HTML |
+
+## Imports
+
+```ts
+// Section components
+import {{ Personal, Summary, Education, Skills, Experience, Projects }} from "../components";
+
+// Layout components
+import {{ Header, Footer, ProgressNav }} from "../components";
+
+// Utils
+import {{ getResumeItems, getItemName, renderContent }} from "../components/utils";
+```
+
+For adding new sections, CSS variables, and common patterns, see [README.md](../../README.md).
 '''

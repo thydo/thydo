@@ -2,7 +2,9 @@
 
 Auto-generated from `resume/sections/`. Run `npm run sync` to update.
 
-## Available Sections
+## Section Components
+
+Resume content sections in `sections/`:
 
 | Component     | Title                   | Items |
 |---------------|-------------------------|-------|
@@ -13,4 +15,35 @@ Auto-generated from `resume/sections/`. Run `npm run sync` to update.
 | 04-Experience | PROFESSIONAL EXPERIENCE | 6     |
 | 05-Projects   | PROJECTS                | 3     |
 
-For structure, usage, adding new sections, CSS variables, and common patterns, see the main [README.md](../../README.md).
+## Layout Components
+
+| Component       | Purpose                                              |
+|-----------------|------------------------------------------------------|
+| `Header.astro`  | `<head>` meta tags, fonts, SEO                       |
+| `Footer.astro`  | Page footer with credits                             |
+| `ProgressNav.astro` | Scroll progress bar with section navigation nodes |
+
+## Utils
+
+Helpers in `utils/resume.ts`:
+
+| Function | Purpose |
+|----------|---------|
+| `getResumeItems(prefix)` | Get all items from a section (excludes header files) |
+| `getItemName(entry)` | Extract item name from file path |
+| `renderContent(content)` | Convert markdown content to HTML |
+
+## Imports
+
+```ts
+// Section components
+import { Personal, Summary, Education, Skills, Experience, Projects } from "../components";
+
+// Layout components
+import { Header, Footer, ProgressNav } from "../components";
+
+// Utils
+import { getResumeItems, getItemName, renderContent } from "../components/utils";
+```
+
+For adding new sections, CSS variables, and common patterns, see [README.md](../../README.md).
